@@ -1,0 +1,13 @@
+:root {
+    --backgroung-primary-color: #090930;
+    --backgroung-secondary-color: #132530;
+    --text-color: aliceblue;
+    --discount-primary: #ff5e00;
+    --discount-secondsry: #ff7300;
+    --search-backgrond-color: #e7e7e7;
+    --search-button-color: #285ed3;
+    --placeholder-color: rgb(117, 117, 117);
+    --catalog-border-color: rgb(206, 206, 206);
+    --nav-text-color: rgb(117, 117, 117);
+    --nav-text-color-onhover: rgb(170, 170, 170);
+}

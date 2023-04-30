@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {{#user}}
+        <img src="{{avatar}}" alt="">
+        <form method="post">
+            <input type="text" name="name" value="{{name}}">
+            <input type="text" name="email" value="{{email}}">
+            <input type="text" name="deliveryAddress" value="{{deliveryAddress}}">
+            <button type="submit"></button>
+        </form>
+    {{/user}}
+    <a href="/">Main page</a>
+</body>
+</html>

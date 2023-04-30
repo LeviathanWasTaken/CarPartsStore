@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Page - Car Parts Store</title>
+</head>
+<body>
+{{#product}}
+    <a href="/">home</a> > <a href="/catalog/{{catalogUUID}}">{{catalogName}}</a>
+    {{#productInfo}}
+        <div>
+            <img src="{{imgSource}}" alt="{{productName}}" />
+        </div>
+        <div>
+            <h1>{{productName}}</h1>
+            <p>Price: $<span id="price">{{priceInPennies}}</span></p>
+            <script>
+                var valueElement = document.getElementById("price");
+                var value = parseInt(valueElement.innerHTML);
+                valueElement.innerHTML = (value / 100).toFixed(2);
+	        </script>
+            <form method="post"  action="/cart/add-to-cart?p={{UUID}}">
+                <label for="amount">Quantity:</label>
+                <input type="number" id="amount" name="quantity" min="1" max="10" value="1" />
+                <button type="submit">Add to Cart</button>
+            </form>
+        </div>
+        <div>
+            <h2>Specification</h2>
+            <button type="button">Edit</button>
+            <table>
+                {{#specifications}}
+                    {{specificationCategoryName}}
+                    {{#data}}
+                    {{/data}}
+                {{/specifications}}
+            </table>
+            <form method="post" action="/catalog/{{catalogUUID}}/product/{{UUID}}/edit-spec">
+                <input type="text" name="specificationCategory">
+                <input type="text" name="name">
+                <input type="text" name="value">
+                <button type="submit">Add</button>
+            </form>
+        </div>
+    {{/productInfo}}
+    <div>
+        <h2>Reviews</h2>
+        {{#reviews}}
+                <div>
+                    <h2>{{mark}}/10</h2>
+                    <p>{{body}}</p>
+                    <p>by {{#author}}{{name}}{{/author}}</p>
+                    <p>{{relevance}}</p>
+                    {{#isAdmin}}<a href="/catalog/{{catalogUUID}}/product/{{UUID}}/remove-review/{{reviewUUID}}">Delete</a> {{/isAdmin}}
+                </div>
+        {{/reviews}}
+        {{#user}}
+            <form method="post" id="review-input">
+                <img src="{{avatar}}" alt="">
+                <p>{{name}}</p>
+                <label for="review">Leave a review:</label>
+                <textarea id="review" name="body"></textarea>
+                <input type="number" name="mark" min="0" max="10">
+                <button type="submit">Submit</button>
+            </form>
+        {{/user}}
+    </div>
+{{/product}}
+</body>
+</html>

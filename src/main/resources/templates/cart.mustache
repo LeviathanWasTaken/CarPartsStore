@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Car Parts Store - Cart</title>
+    <style>
+        .removed-cart-items {
+            color: rgb(180, 180, 180);
+        }
+    </style>
+</head>
+<body>
+    <h1>Shopping Cart</h1>
+    {{^isEmpty}}
+    <table>
+        <thead>
+        <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+            <th></th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#activeCartItems}}
+            <tr>
+                <td>{{#product}}{{#productInfo}}{{productName}}{{/productInfo}}{{/product}}</td>
+                <td>
+                    $<span id="{{#product}}{{UUID}}{{/product}}">{{#product}}{{#productInfo}}{{priceInPennies}}{{/productInfo}}{{/product}}</span>
+                    <script>
+                        var valueElement = document.getElementById("{{#product}}{{UUID}}{{/product}}");
+                        var value = parseInt(valueElement.innerHTML);
+                        valueElement.innerHTML = (value / 100).toFixed(2);
+	                </script>
+                </td>
+                <td>{{quantity}}</td>
+                <td>
+                    $<span id="{{cartItemUUID}}">{{totalPrice}}</span>
+                    <script>
+                        var valueElement = document.getElementById("{{cartItemUUID}}");
+                        var value = parseInt(valueElement.innerHTML);
+                        valueElement.innerHTML = (value / 100).toFixed(2);
+	                </script>
+                </td>
+                <td><button >Edit amount</button><form action="/cart-editQuantity/{{cartItemUUID}}" method="post">
+                    <input type="number" name="quantity" value="{{quantity}}">
+                    <button type="submit">Set</button></form></td>
+                <td><a href="/cart-remove/{{cartItemUUID}}">X</a> </td>
+            </tr>
+        {{/activeCartItems}}
+        {{#removedCartItems}}
+            <tr class="removed-cart-items">
+                <td>{{#product}}{{#productInfo}}{{productName}}{{/productInfo}}{{/product}}</td>
+                <td>
+                    $<span id="{{#product}}{{UUID}}{{/product}}">{{#product}}{{#productInfo}}{{priceInPennies}}{{/productInfo}}{{/product}}</span>
+                    <script>
+                        var valueElement = document.getElementById("{{#product}}{{UUID}}{{/product}}");
+                        var value = parseInt(valueElement.innerHTML);
+                        valueElement.innerHTML = (value / 100).toFixed(2);
+	                </script>
+                </td>
+                <td>{{quantity}}</td>
+                <td>
+                    $<span id="{{cartItemUUID}}">{{totalPrice}}</span>
+                    <script>
+                        var valueElement = document.getElementById("{{cartItemUUID}}");
+                        var value = parseInt(valueElement.innerHTML);
+                        valueElement.innerHTML = (value / 100).toFixed(2);
+	                </script>
+                </td>
+                <td><button >Edit amount</button><form action="/cart-editQuantity/{{cartItemUUID}}" method="post">
+                    <input type="number" name="quantity" value="{{quantity}}">
+                    <button type="submit">Set</button></form></td>
+                <td><a href="/cart-remove/{{cartItemUUID}}">X</a> </td>
+            </tr>
+        {{/removedCartItems}}
+        </tbody>
+        <tfoot>
+        <tr>
+            <td colspan="3">Total</td>
+            <td>$<span id="totalPrice">{{total}}</span>
+                <script>
+                    var valueElement = document.getElementById("totalPrice");
+                    var value = parseInt(valueElement.innerHTML);
+                    valueElement.innerHTML = (value / 100).toFixed(2);
+	            </script>
+            </td>
+        </tr>
+        </tfoot>
+    </table>
+    {{/isEmpty}}
+    <a href="checkout.html">Proceed to Checkout</a>
+    <a href="/">To main page</a>
+</body>
+</html>

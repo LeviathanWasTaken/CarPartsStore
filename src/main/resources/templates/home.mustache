@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/blocks/home-catalog-list.css">
+    <link rel="shortcut icon" href="/static/img/favicon.svg" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Parts Store</title>
+</head>
+<body>
+{{>partials/header}}
+{{>partials/user-bar}}
+<div class="catalog">
+    <div class="catalog-title">
+        <p>Catalog</p>
+    </div>
+    <div class="catalog-list">
+        {{#allCatalogs}}
+            <div class="catalog-tile">
+                <a class="catalog-name" href="/catalog/{{UUID}}">
+                    <img class="catalog-tile-img" src="{{imgPath}}" alt="img">
+                    <p class="catalog-name-p">{{name}}</p>
+                </a>
+            </div>
+        {{/allCatalogs}}
+    </div>
+</div>
+{{>partials/footer}}
+</body>
+</html>

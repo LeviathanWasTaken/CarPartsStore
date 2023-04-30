@@ -1,0 +1,104 @@
+.catalog {
+    max-width: 1000px;
+    margin: 0 auto 100px;
+}
+
+.catalog-title {
+    width: 200px;
+    height: 50px;
+    margin-top: 20px;
+    margin-left: 5px;
+    margin-right: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.catalog-title p {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 40px;
+    font-weight: bold;
+    color: #24292e;
+    line-height: 1.5;
+}
+
+.catalog-list {
+    display: flex;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 20px;
+    column-gap: 50px;
+    row-gap: 50px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.catalog-tile {
+    width: 208px;
+    height: 208px;
+    text-align: center;
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 2px 0px;
+    border: 1px solid;
+    border-radius: 10px;
+    border-color: var(--catalog-border-color);
+    display: flex;
+    align-content: center;
+    justify-content: center;
+}
+
+.catalog-tile-img {
+    width: 120px;
+    height: 120px;
+}
+
+.catalog-tile p {
+    font-size: 20px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: bold;
+}
+
+.catalog-tile a {
+    text-decoration: none;
+    width: inherit;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: var(--nav-text-color);
+}
+
+.catalog-tile a:hover {
+    color: var(--nav-text-color-onhover);
+    transition-duration: 200ms;
+}
+
+.catalog-tile:hover {
+    box-shadow: 0 8px 8px 0 rgba(0,0,0,.05), 0 29px 26px 0 rgba(0,0,0,.08);
+    transition-duration: 200ms;
+
+}
+
+@media screen and (max-width: 500px){
+    .catalog-tile-img {
+        width: 40px;
+        height: 40px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+    .catalog-tile {
+        max-width: 500px;
+        width: 100%;
+        max-height: 50px;
+        height: 100%;
+    }
+    .catalog-tile a {
+        align-items: center;
+        flex-direction: row;
+        justify-content: flex-start;
+    }
+    .catalog-list {
+        row-gap: 5px;
+    }
+}

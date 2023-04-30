@@ -1,0 +1,32 @@
+<link rel="stylesheet" href="/static/css/blocks/header.css">
+<div class="header-bg">
+    <div class="discount">
+        <p class="offer">GET YOUR CAR READY FOR SUMMER! UP TO 69% OFF*</p>
+    </div>
+    <div class="header-container">
+        <header>
+            <a href="/" class="header-top">
+                <img src="/static/img/car-engine-svgrepo-com.svg" alt="logo">
+                <h1>CAR PARTS STORE</h1>
+            </a>
+            <div class="header-main">
+                <form action="/catalog">
+                    <div class="input-row">
+                        <input type="search" id="search" name="search" autocomplete="off" placeholder="Enter search terms...">
+                        <button type="submit" class="search-btn"><img width="30px" height="30px" src="/static/img/search-icon.svg" alt=""></button>
+                    </div>
+                </form>
+            </div>
+            <nav>
+                <div class="catalogs-top5">
+                    {{#top5Catalogs}}
+                        <div class="catalogs-top5-tile">
+                            <img class="catalogs-top5-icon" src="{{imgPath}}" alt="">
+                            <a href="/catalog/{{UUID}}">{{name}}</a>
+                        </div>
+                    {{/top5Catalogs}}
+                </div>
+            </nav>
+        </header>
+    </div>
+</div>
