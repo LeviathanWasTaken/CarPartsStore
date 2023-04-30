@@ -113,7 +113,7 @@ public class CatalogService {
                 child -> child.getStatus().equals(Status.CATALOG_REMOVED)
         ).toList();
         for (Catalog child : allChildren) {
-            if (removedChildren.stream().noneMatch(
+            if (!removedChildren.contains(child) && removedChildren.stream().noneMatch(
                     removedChild -> removedChild.getLeft() < child.getLeft() && removedChild.getRight() > child.getRight()
             )) {
                 child.setStatus(Status.ACTIVE);
