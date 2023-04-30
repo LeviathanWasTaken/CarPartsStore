@@ -49,16 +49,6 @@ public class CatalogService {
         return catalogRepo.findFirst5ByStatusOrderByPopularityDesc(Status.ACTIVE);
     }
 
-    public void addNewCatalog(Catalog parent, String catalogName, String imgSource) {
-        String uniqueTag = catalogName.strip().toUpperCase().replace(" ", "_");
-        Catalog newCatalog = new Catalog(catalogName, imgSource, uniqueTag, Status.ACTIVE);
-        addChild(parent, newCatalog);
-    }
-    public void addNewCatalog(Catalog parent, String catalogName, String imgSource, Status status) {
-        String uniqueTag = catalogName.strip().toUpperCase().replace(" ", "_");
-        Catalog newCatalog = new Catalog(catalogName, imgSource, uniqueTag, status);
-        addChild(parent, newCatalog);
-    }
     public void addNewCatalog(Catalog parent, String catalogName, String imgSource, String uniqueTag) {
         Catalog newCatalog = new Catalog(catalogName, imgSource, uniqueTag, Status.ACTIVE);
         addChild(parent, newCatalog);

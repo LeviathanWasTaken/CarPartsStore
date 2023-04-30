@@ -14,6 +14,8 @@ public class Product {
     private UUID productUUID;
     @ManyToOne
     private Catalog catalog;
+    @Column(unique = true)
+    private String uniqueTag;
     @OneToOne(mappedBy = "product")
     private ProductInfo productInfo;
     @OneToMany(mappedBy = "product")
@@ -26,7 +28,7 @@ public class Product {
     public Product() {
     }
 
-    public Product(Catalog catalog) {
+    public Product(Catalog catalog, String uniqueTag) {
         this.catalog = catalog;
         status = Status.ACTIVE;
     }
