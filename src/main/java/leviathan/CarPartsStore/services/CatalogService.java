@@ -38,7 +38,7 @@ public class CatalogService {
         List<Catalog> catalogs = new ArrayList<>();
         Catalog root = catalogRepo.findByUniqueTag("ROOT").orElseThrow(
                 () -> new IllegalArgumentException("SHIT! SHIT! SHIT! THERE IS NO ROOT"));
-        return catalogRepo.findAllByLeftBoundaryGreaterThanAndRightBoundaryLessThan(root.getLeft(), root.getRight());
+        return catalogRepo.findAllByLeftGreaterThanAndRightLessThan(root.getLeft(), root.getRight());
     }
 
     public Catalog getCatalog(String uniqueTag) {
@@ -46,7 +46,9 @@ public class CatalogService {
     }
 
     public List<Catalog> getTop5ActiveByPopularity() {
-        return catalogRepo.findFirst5ByStatusOrderByPopularityDesc(Status.ACTIVE);
+        Catalog root = catalogRepo.findByUniqueTag("ROOT").orElseThrow(
+                () -> new IllegalArgumentException("SHIT! SHIT! SHIT! THERE IS NO ROOT"));
+        return catalogRepo.findFirst5ByStatusAndLeftGreaterThanAndRightLessThanOrderByPopularityDesc(Status.ACTIVE, root.getLeft(), root.getRight());
     }
 
     public void addNewCatalog(Catalog parent, String catalogName, String imgSource, String uniqueTag) {
@@ -73,7 +75,7 @@ public class CatalogService {
     public void removeCatalog(Catalog catalog) {
         catalog.setStatus(Status.CATALOG_REMOVED);
         catalogRepo.save(catalog);
-        List<Catalog> allChildren = catalogRepo.findAllByLeftBoundaryGreaterThanAndRightBoundaryLessThan(
+        List<Catalog> allChildren = catalogRepo.findAllByLeftGreaterThanAndRightLessThan(
                 catalog.getLeft(), catalog.getRight()
         ).stream().filter(
                 catalogChild -> catalogChild.getStatus().equals(Status.ACTIVE)
@@ -96,7 +98,7 @@ public class CatalogService {
     public void restoreCatalog(Catalog catalog) {
         catalog.setStatus(Status.ACTIVE);
         catalogRepo.save(catalog);
-        List<Catalog> allChildren = catalogRepo.findAllByLeftBoundaryGreaterThanAndRightBoundaryLessThan(
+        List<Catalog> allChildren = catalogRepo.findAllByLeftGreaterThanAndRightLessThan(
                 catalog.getLeft(), catalog.getRight()
         );
         List<Catalog> removedChildren = allChildren.stream().filter(

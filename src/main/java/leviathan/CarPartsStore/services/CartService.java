@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class CartService {
+    /*
     private final UserService userService;
     private final CartItemRepo cartItemRepo;
     private final CartRepo cartRepo;
@@ -25,7 +26,7 @@ public class CartService {
         this.cartItemRepo = cartItemRepo;
         this.cartRepo = cartRepo;
     }
-/*
+
     public int getAmountOfItemsInCart(UUID userUUID) {
         return userService.getByUUID(userUUID).map(user -> getAmountOfActiveItemsInCart(user.getCart())).orElse(0);
     }
@@ -97,7 +98,7 @@ public class CartService {
         }
         return result;
     }
-    */
+
 
     public List<CartItem> getRemovedCartItems(Cart cart) {
         return cart.getCartItems().stream().filter(
@@ -117,6 +118,8 @@ public class CartService {
         return cart.getCartItems().stream().anyMatch(cartItem -> cartItem.getProduct().equals(product));
     }
 
+ */
+
     public int calculateTotalPriceOfActiveElementsInCart(Cart cart) {
         int totalPrice = 0;
         for (CartItem cartItem : cart.getCartItems().stream().filter(
@@ -134,4 +137,6 @@ public class CartService {
         }
         return totalAmount;
     }
+
+
 }

@@ -14,5 +14,7 @@ public interface CatalogRepo extends CrudRepository<Catalog, UUID> {
     Optional<Catalog> findByUniqueTag(@Param("uniqueTag") String uniqueTag);
     List<Catalog> findFirst5ByStatusOrderByPopularityDesc(Status status);
 
-    List<Catalog> findAllByLeftBoundaryGreaterThanAndRightBoundaryLessThan(int leftBoundary, int rightBoundary);
+    List<Catalog> findAllByLeftGreaterThanAndRightLessThan(int left, int right);
+
+    List<Catalog> findFirst5ByStatusAndLeftGreaterThanAndRightLessThanOrderByPopularityDesc(Status status, int left, int right);
 }

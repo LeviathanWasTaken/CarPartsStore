@@ -199,7 +199,7 @@ public class AdminController {
         return "product";
     }
 
-     */
+
 
     private List<Map<String, Object>> products(Iterable<Product> products, Iterable<Catalog> catalogs) {
         List<Map<String, Object>> result = new ArrayList<>();
@@ -230,6 +230,8 @@ public class AdminController {
         }
         return result;
     }
+
+     */
 
 
 }

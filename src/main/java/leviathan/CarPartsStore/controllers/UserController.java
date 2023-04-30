@@ -13,6 +13,7 @@ import java.util.Map;
 
 @Controller
 public class UserController {
+    /*
     @Autowired
     private UserService userService;
     @GetMapping("/profile")
@@ -34,4 +35,6 @@ public class UserController {
         userService.save(user);
         return "redirect:/profile";
     }
+
+     */
 }
