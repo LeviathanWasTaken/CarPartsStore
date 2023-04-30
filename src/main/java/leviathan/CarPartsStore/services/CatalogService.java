@@ -6,13 +6,10 @@ import leviathan.CarPartsStore.domain.Product;
 import leviathan.CarPartsStore.model.Status;
 import leviathan.CarPartsStore.repos.CatalogRepo;
 import leviathan.CarPartsStore.repos.ProductRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 @Service
 public class CatalogService {
@@ -131,7 +128,7 @@ public class CatalogService {
             }
         }
     }
-    
+
     @Transactional
     public void addChild(Catalog parent, Catalog child) {
         parent.getChildren().add(child);
