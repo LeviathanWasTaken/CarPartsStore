@@ -1,21 +1,22 @@
 package leviathan.CarPartsStore.services;
 
 import jakarta.transaction.Transactional;
-import leviathan.CarPartsStore.domain.*;
+import java.util.Map;
+import java.util.UUID;
+import leviathan.CarPartsStore.domain.Catalog;
+import leviathan.CarPartsStore.domain.Product;
+import leviathan.CarPartsStore.domain.ProductInfo;
 import leviathan.CarPartsStore.model.Status;
-import leviathan.CarPartsStore.repos.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import leviathan.CarPartsStore.repos.ProductInfoRepo;
+import leviathan.CarPartsStore.repos.ProductRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductsService {
+
     private final ProductRepo productRepo;
     private final ProductInfoRepo productInfoRepo;
 
@@ -40,13 +41,19 @@ public class ProductsService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         return productRepo.findProductsByCatalogUUIDAndStatus(catalogUUID, Status.ACTIVE, pageable);
     }
+
     @Transactional
-    public void addProduct(Catalog catalog, String uniqueTag, String productName, String imgSource, int priceInPennies) {
+    public void addProduct(Catalog catalog,
+                           String uniqueTag,
+                           String productName,
+                           String imgSource,
+                           int priceInPennies) {
         Product product = new Product(catalog, uniqueTag);
         ProductInfo productInfo = new ProductInfo(product, productName, imgSource, priceInPennies);
         productRepo.save(product);
         productInfoRepo.save(productInfo);
     }
+
     @Transactional
     public void removeProduct(Product product) {
         product.setStatus(Status.PRODUCT_REMOVED);
@@ -54,7 +61,11 @@ public class ProductsService {
     }
 
     @Transactional
-    public void modifyProduct(Product product, Catalog catalog, String productName, String imgSource, int priceInPennies) {
+    public void modifyProduct(Product product,
+                              Catalog catalog,
+                              String productName,
+                              String imgSource,
+                              int priceInPennies) {
         product.setCatalog(catalog);
         ProductInfo productInfo = product.getProductInfo();
         productInfo.setProductName(productName);

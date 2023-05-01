@@ -1,25 +1,6 @@
 package leviathan.CarPartsStore.controllers;
 
-import jakarta.servlet.http.HttpServletResponse;
-import leviathan.CarPartsStore.domain.Catalog;
-import leviathan.CarPartsStore.domain.Product;
-import leviathan.CarPartsStore.domain.Roles;
-import leviathan.CarPartsStore.model.Status;
-import leviathan.CarPartsStore.services.CatalogService;
-import leviathan.CarPartsStore.services.ProductsService;
-import leviathan.CarPartsStore.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.servlet.ModelAndView;
-
-import java.io.IOException;
-import java.util.*;
 
 @Controller
 public class AdminController {

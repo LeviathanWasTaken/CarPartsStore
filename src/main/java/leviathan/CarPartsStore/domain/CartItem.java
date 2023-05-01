@@ -1,12 +1,19 @@
 package leviathan.CarPartsStore.domain;
 
-import jakarta.persistence.*;
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.util.UUID;
+import lombok.Data;
 
 @Entity
 @Table(name = "cartItems")
+@Data
 public class CartItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID cartItemUUID;
@@ -25,35 +32,4 @@ public class CartItem {
         this.product = product;
     }
 
-    public Cart getCart() {
-        return cart;
-    }
-
-    public void setCart(Cart cart) {
-        this.cart = cart;
-    }
-
-    public int getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(int quantity) {
-        this.quantity = quantity;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public UUID getCartItemUUID() {
-        return cartItemUUID;
-    }
-
-    public void setCartItemUUID(UUID cartItemUUID) {
-        this.cartItemUUID = cartItemUUID;
-    }
 }

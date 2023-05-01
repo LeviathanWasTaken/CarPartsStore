@@ -1,16 +1,28 @@
 package leviathan.CarPartsStore.domain;
 
-import jakarta.persistence.*;
-import leviathan.CarPartsStore.model.Status;
-
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import leviathan.CarPartsStore.model.Status;
+import lombok.Data;
 
 @Entity
 @Table(name = "catalogs")
+@Data
 public class Catalog {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID UUID;
@@ -46,70 +58,4 @@ public class Catalog {
         popularity = 0;
     }
 
-    public Catalog getParent() {
-        return parent;
-    }
-    public void setParent(Catalog parent) {
-        this.parent = parent;
-    }
-    public Set<Catalog> getChildren() {
-        return children;
-    }
-    public void setChildren(Set<Catalog> children) {
-        this.children = children;
-    }
-    public String getImgSource() {
-        return imgSource;
-    }
-    public void setImgSource(String imgPath) {
-        this.imgSource = imgPath;
-    }
-    public String getUniqueTag() {
-        return uniqueTag;
-    }
-    public void setUniqueTag(String uniqueTag) {
-        this.uniqueTag = uniqueTag;
-    }
-    public String getCatalogName() {
-        return catalogName;
-    }
-    public void setCatalogName(String catalogName) {
-        this.catalogName = catalogName;
-    }
-    public List<Product> getProducts() {
-        return products;
-    }
-    public java.util.UUID getUUID() {
-        return UUID;
-    }
-    public void setUUID(java.util.UUID UUID) {
-        this.UUID = UUID;
-    }
-    public void setProducts(List<Product> products) {
-        this.products = products;
-    }
-    public long getPopularity() {
-        return popularity;
-    }
-    public void setPopularity(long popularity) {
-        this.popularity = popularity;
-    }
-    public Status getStatus() {
-        return status;
-    }
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-    public int getRight() {
-        return right;
-    }
-    public void setRight(int right) {
-        this.right = right;
-    }
-    public int getLeft() {
-        return left;
-    }
-    public void setLeft(int left) {
-        this.left = left;
-    }
 }

@@ -1,25 +1,33 @@
 package leviathan.CarPartsStore.services;
 
-import leviathan.CarPartsStore.domain.*;
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import leviathan.CarPartsStore.domain.Cart;
+import leviathan.CarPartsStore.domain.Roles;
+import leviathan.CarPartsStore.domain.User;
 import leviathan.CarPartsStore.repos.CartItemRepo;
 import leviathan.CarPartsStore.repos.CartRepo;
 import leviathan.CarPartsStore.repos.UserRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.*;
-
 @Service
 public class UserService {
+
     private final UserRepo userRepo;
     private final CartItemRepo cartItemRepo;
     private final ProductsService productsService;
     private final CartRepo cartRepo;
     private final CartService cartService;
 
-    public UserService(CartService cartService, UserRepo userRepo, CartItemRepo cartItemRepo, ProductsService productsService, CartRepo cartRepo) {
+    public UserService(CartService cartService,
+                       UserRepo userRepo,
+                       CartItemRepo cartItemRepo,
+                       ProductsService productsService,
+                       CartRepo cartRepo) {
         this.cartService = cartService;
         this.userRepo = userRepo;
         this.cartItemRepo = cartItemRepo;
@@ -38,10 +46,10 @@ public class UserService {
         cartRepo.save(cart);
 
         User user = new User((int) attributes.get("id"),
-                (String) attributes.get("avatar_url"),
-                (String) attributes.get("login"),
-                cart,
-                Collections.singleton(Roles.ADMIN)
+                             (String) attributes.get("avatar_url"),
+                             (String) attributes.get("login"),
+                             cart,
+                             Collections.singleton(Roles.ADMIN)
         );
         userRepo.save(user);
         return user;
@@ -64,8 +72,9 @@ public class UserService {
     }
 
 
-
-    public ModelAndView putMainUserInfo(ModelAndView mav, OAuth2AuthenticationToken oAuth2AuthenticationToken, AuthorizationService authorizationService) {
+    public ModelAndView putMainUserInfo(ModelAndView mav,
+                                        OAuth2AuthenticationToken oAuth2AuthenticationToken,
+                                        AuthorizationService authorizationService) {
         boolean isUserAuthorized = oAuth2AuthenticationToken != null;
         mav.addObject("isUserAuthorized", isUserAuthorized);
         if (isUserAuthorized) {

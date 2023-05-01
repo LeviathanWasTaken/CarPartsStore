@@ -1,14 +1,21 @@
 package leviathan.CarPartsStore.domain;
 
-import jakarta.persistence.*;
-import leviathan.CarPartsStore.services.MapConverter;
-
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import leviathan.CarPartsStore.services.MapConverter;
+import lombok.Data;
 
 @Entity
+@Data
 public class ProductInfo {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID productInfoUUID;
@@ -31,40 +38,4 @@ public class ProductInfo {
         details = new HashMap<>();
     }
 
-    public Product getProduct() {
-        return product;
-    }
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-    public String getProductName() {
-        return productName;
-    }
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-    public String getImgSource() {
-        return imgSource;
-    }
-    public void setImgSource(String imgSource) {
-        this.imgSource = imgSource;
-    }
-    public int getPriceInPennies() {
-        return priceInPennies;
-    }
-    public void setPriceInPennies(int priceInPennies) {
-        this.priceInPennies = priceInPennies;
-    }
-    public UUID getProductInfoUUID() {
-        return productInfoUUID;
-    }
-    public void setProductInfoUUID(UUID productInfoUUID) {
-        this.productInfoUUID = productInfoUUID;
-    }
-    public Map<String, Object> getDetails() {
-        return details;
-    }
-    public void setDetails(Map<String, Object> details) {
-        this.details = details;
-    }
 }

@@ -1,17 +1,14 @@
 package leviathan.CarPartsStore.services;
 
+import java.util.Map;
 import leviathan.CarPartsStore.domain.User;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.ClientAuthorizationException;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 @Service
 public class AuthorizationService {
 
@@ -44,6 +41,7 @@ public class AuthorizationService {
     }
 
     public User authorizeViaGithub(Map<String, Object> attributes) {
-        return userService.getUserByGithubId((int) attributes.get("id")).orElseGet(() -> userService.createNewUserByGithubAttributes(attributes));
+        return userService.getUserByGithubId((int) attributes.get("id"))
+              .orElseGet(() -> userService.createNewUserByGithubAttributes(attributes));
     }
 }

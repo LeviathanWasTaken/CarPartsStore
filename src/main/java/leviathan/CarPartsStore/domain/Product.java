@@ -1,14 +1,24 @@
 package leviathan.CarPartsStore.domain;
 
-import jakarta.persistence.*;
-import leviathan.CarPartsStore.model.Status;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import java.util.List;
 import java.util.UUID;
+import leviathan.CarPartsStore.model.Status;
+import lombok.Data;
 
 @Entity
 @Table(name = "products")
+@Data
 public class Product {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID productUUID;
@@ -33,40 +43,4 @@ public class Product {
         status = Status.ACTIVE;
     }
 
-    public Catalog getCatalog() {
-        return catalog;
-    }
-    public void setCatalog(Catalog catalog) {
-        this.catalog = catalog;
-    }
-    public java.util.UUID getProductUUID() {
-        return productUUID;
-    }
-    public void setProductUUID(java.util.UUID UUID) {
-        this.productUUID = UUID;
-    }
-    public ProductInfo getProductInfo() {
-        return productInfo;
-    }
-    public void setProductInfo(ProductInfo productInfo) {
-        this.productInfo = productInfo;
-    }
-    public List<CartItem> getCartItems() {
-        return cartItems;
-    }
-    public void setCartItems(List<CartItem> cartItems) {
-        this.cartItems = cartItems;
-    }
-    public Status getStatus() {
-        return status;
-    }
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-    public List<Review> getReviews() {
-        return reviews;
-    }
-    public void setReviews(List<Review> reviews) {
-        this.reviews = reviews;
-    }
 }

@@ -1,6 +1,8 @@
 package leviathan.CarPartsStore.services;
 
 import jakarta.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
 import leviathan.CarPartsStore.domain.Catalog;
 import leviathan.CarPartsStore.domain.Product;
 import leviathan.CarPartsStore.model.Status;
@@ -8,11 +10,9 @@ import leviathan.CarPartsStore.repos.CatalogRepo;
 import leviathan.CarPartsStore.repos.ProductRepo;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Service
 public class CatalogService {
+
     private final CatalogRepo catalogRepo;
     private final ProductRepo productRepo;
 
@@ -24,20 +24,20 @@ public class CatalogService {
 
     public List<Catalog> getAllChildCatalogs(String uniqueTag) {
         return catalogRepo.findByUniqueTag(uniqueTag).orElseThrow(
-                () -> new IllegalArgumentException("THERE IS NO " + uniqueTag)
+              () -> new IllegalArgumentException("THERE IS NO " + uniqueTag)
         ).getChildren().stream().toList();
     }
 
     public List<Catalog> getAllActiveChildCatalogs(String uniqueTag) {
         return catalogRepo.findByUniqueTag(uniqueTag).orElseThrow(
-                () -> new IllegalArgumentException("THERE IS NO " + uniqueTag)
+              () -> new IllegalArgumentException("THERE IS NO " + uniqueTag)
         ).getChildren().stream().filter(catalog -> catalog.getStatus().equals(Status.ACTIVE)).toList();
     }
 
     public List<Catalog> getAllCatalogs() {
         List<Catalog> catalogs = new ArrayList<>();
         Catalog root = catalogRepo.findByUniqueTag("ROOT").orElseThrow(
-                () -> new IllegalArgumentException("SHIT! SHIT! SHIT! THERE IS NO ROOT"));
+              () -> new IllegalArgumentException("SHIT! SHIT! SHIT! THERE IS NO ROOT"));
         return catalogRepo.findAllByLeftGreaterThanAndRightLessThan(root.getLeft(), root.getRight());
     }
 
@@ -47,20 +47,27 @@ public class CatalogService {
 
     public List<Catalog> getTop5ActiveByPopularity() {
         Catalog root = catalogRepo.findByUniqueTag("ROOT").orElseThrow(
-                () -> new IllegalArgumentException("SHIT! SHIT! SHIT! THERE IS NO ROOT"));
-        return catalogRepo.findFirst5ByStatusAndLeftGreaterThanAndRightLessThanOrderByPopularityDesc(Status.ACTIVE, root.getLeft(), root.getRight());
+              () -> new IllegalArgumentException("SHIT! SHIT! SHIT! THERE IS NO ROOT"));
+        return catalogRepo.findFirst5ByStatusAndLeftGreaterThanAndRightLessThanOrderByPopularityDesc(Status.ACTIVE,
+                                                                                                     root.getLeft(),
+                                                                                                     root.getRight());
     }
 
     public void addNewCatalog(Catalog parent, String catalogName, String imgSource, String uniqueTag) {
         Catalog newCatalog = new Catalog(catalogName, imgSource, uniqueTag, Status.ACTIVE);
         addChild(parent, newCatalog);
     }
+
     public void addNewCatalog(Catalog parent, String catalogName, String imgSource, String uniqueTag, Status status) {
         Catalog newCatalog = new Catalog(catalogName, imgSource, uniqueTag, status);
         addChild(parent, newCatalog);
     }
 
-    public void modifyCatalog(Catalog catalog, String catalogName, String imgSource, String uniqueTag, long popularity) {
+    public void modifyCatalog(Catalog catalog,
+                              String catalogName,
+                              String imgSource,
+                              String uniqueTag,
+                              long popularity) {
         if (catalogRepo.findByUniqueTag(uniqueTag).isEmpty()) {
             catalog.setUniqueTag(uniqueTag);
         }
@@ -76,15 +83,15 @@ public class CatalogService {
         catalog.setStatus(Status.CATALOG_REMOVED);
         catalogRepo.save(catalog);
         List<Catalog> allChildren = catalogRepo.findAllByLeftGreaterThanAndRightLessThan(
-                catalog.getLeft(), catalog.getRight()
+              catalog.getLeft(), catalog.getRight()
         ).stream().filter(
-                catalogChild -> catalogChild.getStatus().equals(Status.ACTIVE)
+              catalogChild -> catalogChild.getStatus().equals(Status.ACTIVE)
         ).toList();
         for (Catalog child : allChildren) {
             child.setStatus(Status.PARENT_CATALOG_REMOVED);
             catalogRepo.save(child);
             List<Product> products = child.getProducts().stream().filter(
-                    product -> product.getStatus().equals(Status.ACTIVE)
+                  product -> product.getStatus().equals(Status.ACTIVE)
             ).toList();
             for (Product product : products) {
                 product.setStatus(Status.CATALOG_REMOVED);
@@ -99,19 +106,19 @@ public class CatalogService {
         catalog.setStatus(Status.ACTIVE);
         catalogRepo.save(catalog);
         List<Catalog> allChildren = catalogRepo.findAllByLeftGreaterThanAndRightLessThan(
-                catalog.getLeft(), catalog.getRight()
+              catalog.getLeft(), catalog.getRight()
         );
         List<Catalog> removedChildren = allChildren.stream().filter(
-                child -> child.getStatus().equals(Status.CATALOG_REMOVED)
+              child -> child.getStatus().equals(Status.CATALOG_REMOVED)
         ).toList();
         for (Catalog child : allChildren) {
             if (!removedChildren.contains(child) && removedChildren.stream().noneMatch(
-                    removedChild -> removedChild.getLeft() < child.getLeft() && removedChild.getRight() > child.getRight()
+                  removedChild -> removedChild.getLeft() < child.getLeft() && removedChild.getRight() > child.getRight()
             )) {
                 child.setStatus(Status.ACTIVE);
                 catalogRepo.save(child);
                 List<Product> products = child.getProducts().stream().filter(
-                        product -> product.getStatus().equals(Status.CATALOG_REMOVED)
+                      product -> product.getStatus().equals(Status.CATALOG_REMOVED)
                 ).toList();
                 for (Product product : products) {
                     product.setStatus(Status.ACTIVE);

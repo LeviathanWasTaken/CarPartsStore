@@ -3,11 +3,11 @@ package leviathan.CarPartsStore.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.AttributeConverter;
-
 import java.io.IOException;
 import java.util.HashMap;
 
 public class MapConverter implements AttributeConverter<HashMap<String, Object>, String> {
+
     @Override
     public String convertToDatabaseColumn(HashMap<String, Object> attribute) {
         if (attribute == null || attribute.isEmpty()) {
