@@ -8,23 +8,23 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig  {
+public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         httpSecurity
-                .csrf().disable()
-                .authorizeHttpRequests()
-                    .requestMatchers("/cart**", "/admin**").authenticated()
-                    .anyRequest().permitAll()
-                .and()
-                .logout()
-                .logoutSuccessUrl("/")
-                .and()
-                .oauth2Login()
-                    .loginPage("/login")
-                    .defaultSuccessUrl("/");
+              .csrf().disable()
+              .authorizeHttpRequests()
+              .requestMatchers("/cart**", "/admin**").authenticated()
+              .anyRequest().permitAll()
+              .and()
+              .logout()
+              .logoutSuccessUrl("/")
+              .and()
+              .oauth2Login()
+              .loginPage("/login")
+              .defaultSuccessUrl("/");
 
         return httpSecurity.build();
     }

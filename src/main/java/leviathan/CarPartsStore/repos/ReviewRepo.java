@@ -1,12 +1,12 @@
 package leviathan.CarPartsStore.repos;
 
-import leviathan.CarPartsStore.domain.Product;
-import leviathan.CarPartsStore.domain.Review;
-import org.springframework.data.repository.CrudRepository;
-
 import java.util.List;
 import java.util.UUID;
+import leviathan.CarPartsStore.entity.Product;
+import leviathan.CarPartsStore.entity.Review;
+import org.springframework.data.repository.CrudRepository;
 
 public interface ReviewRepo extends CrudRepository<Review, UUID> {
-    public List<Review> findAllByProduct(Product product);
+
+    List<Review> findAllByProduct(Product product);
 }

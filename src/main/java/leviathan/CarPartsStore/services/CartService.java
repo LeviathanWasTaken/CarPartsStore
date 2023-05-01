@@ -1,18 +1,9 @@
 package leviathan.CarPartsStore.services;
 
-import leviathan.CarPartsStore.domain.Cart;
-import leviathan.CarPartsStore.domain.CartItem;
-import leviathan.CarPartsStore.domain.Product;
-import leviathan.CarPartsStore.domain.User;
+import leviathan.CarPartsStore.entity.Cart;
+import leviathan.CarPartsStore.entity.CartItem;
 import leviathan.CarPartsStore.model.Status;
-import leviathan.CarPartsStore.repos.CartItemRepo;
-import leviathan.CarPartsStore.repos.CartRepo;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Service
 public class CartService {
@@ -123,7 +114,7 @@ public class CartService {
     public int calculateTotalPriceOfActiveElementsInCart(Cart cart) {
         int totalPrice = 0;
         for (CartItem cartItem : cart.getCartItems().stream().filter(
-                cartItem -> cartItem.getProduct().getStatus().equals(Status.ACTIVE)).toList()) {
+              cartItem -> cartItem.getProduct().getStatus().equals(Status.ACTIVE)).toList()) {
             totalPrice += cartItem.getProduct().getProductInfo().getPriceInPennies() * cartItem.getQuantity();
         }
         return totalPrice;
@@ -132,7 +123,7 @@ public class CartService {
     public int calculateTotalAmountOfActiveElementsInCart(Cart cart) {
         int totalAmount = 0;
         for (CartItem cartItem : cart.getCartItems().stream().filter(
-                cartItem -> cartItem.getProduct().getStatus().equals(Status.ACTIVE)).toList()) {
+              cartItem -> cartItem.getProduct().getStatus().equals(Status.ACTIVE)).toList()) {
             totalAmount += cartItem.getQuantity();
         }
         return totalAmount;

@@ -1,9 +1,8 @@
 package leviathan.CarPartsStore.repos;
 
-import leviathan.CarPartsStore.domain.Cart;
-import org.springframework.data.repository.CrudRepository;
-
 import java.util.UUID;
+import leviathan.CarPartsStore.entity.Cart;
+import org.springframework.data.repository.CrudRepository;
 
 public interface CartRepo extends CrudRepository<Cart, UUID> {
 

@@ -15,9 +15,9 @@ public class LoginController {
     @GetMapping("/oauth2/authorization/github")
     public String authorizeWithGithub(OAuth2AuthorizedClient authorizedClient) {
         return "redirect:" + authorizedClient.getClientRegistration().getProviderDetails()
-                .getAuthorizationUri() + "?client_id=" + authorizedClient.getClientRegistration().getClientId()
-                + "&redirect_uri=" + authorizedClient.getClientRegistration().getRedirectUri()
-                + "&state=" + authorizedClient.getAccessToken().getTokenValue();
+              .getAuthorizationUri() + "?client_id=" + authorizedClient.getClientRegistration().getClientId()
+              + "&redirect_uri=" + authorizedClient.getClientRegistration().getRedirectUri()
+              + "&state=" + authorizedClient.getAccessToken().getTokenValue();
     }
 
 }
