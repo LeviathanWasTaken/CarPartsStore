@@ -3,8 +3,8 @@ package leviathan.CarPartsStore.services;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import leviathan.CarPartsStore.domain.Catalog;
-import leviathan.CarPartsStore.domain.Product;
+import leviathan.CarPartsStore.entity.Catalog;
+import leviathan.CarPartsStore.entity.Product;
 import leviathan.CarPartsStore.model.Status;
 import leviathan.CarPartsStore.repos.CatalogRepo;
 import leviathan.CarPartsStore.repos.ProductRepo;
@@ -87,6 +87,10 @@ public class CatalogService {
         ).stream().filter(
               catalogChild -> catalogChild.getStatus().equals(Status.ACTIVE)
         ).toList();
+        storeRemovedChildrenCatalogsInDb(allChildren);
+    }
+
+    private void storeRemovedChildrenCatalogsInDb(List<Catalog> allChildren) {
         for (Catalog child : allChildren) {
             child.setStatus(Status.PARENT_CATALOG_REMOVED);
             catalogRepo.save(child);
@@ -100,6 +104,11 @@ public class CatalogService {
         }
     }
 
+    /**
+     * method for bla bla bla
+     *
+     * @param catalog catalog to restore
+     */
     //cascade restore
     @Transactional
     public void restoreCatalog(Catalog catalog) {

@@ -1,7 +1,7 @@
 package leviathan.CarPartsStore.services;
 
 import java.util.Map;
-import leviathan.CarPartsStore.domain.User;
+import leviathan.CarPartsStore.entity.User;
 import org.springframework.security.oauth2.client.ClientAuthorizationException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;

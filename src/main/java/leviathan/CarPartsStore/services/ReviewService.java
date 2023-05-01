@@ -2,9 +2,9 @@ package leviathan.CarPartsStore.services;
 
 import java.util.List;
 import java.util.UUID;
-import leviathan.CarPartsStore.domain.Product;
-import leviathan.CarPartsStore.domain.Review;
-import leviathan.CarPartsStore.domain.User;
+import leviathan.CarPartsStore.entity.Product;
+import leviathan.CarPartsStore.entity.Review;
+import leviathan.CarPartsStore.entity.User;
 import leviathan.CarPartsStore.repos.ReviewRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

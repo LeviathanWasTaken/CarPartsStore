@@ -2,7 +2,7 @@ package leviathan.CarPartsStore.repos;
 
 import java.util.Optional;
 import java.util.UUID;
-import leviathan.CarPartsStore.domain.User;
+import leviathan.CarPartsStore.entity.User;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 

@@ -2,7 +2,7 @@ package leviathan.CarPartsStore.repos;
 
 import java.util.Optional;
 import java.util.UUID;
-import leviathan.CarPartsStore.domain.Product;
+import leviathan.CarPartsStore.entity.Product;
 import leviathan.CarPartsStore.model.Status;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

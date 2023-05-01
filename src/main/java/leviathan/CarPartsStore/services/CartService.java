@@ -1,7 +1,7 @@
 package leviathan.CarPartsStore.services;
 
-import leviathan.CarPartsStore.domain.Cart;
-import leviathan.CarPartsStore.domain.CartItem;
+import leviathan.CarPartsStore.entity.Cart;
+import leviathan.CarPartsStore.entity.CartItem;
 import leviathan.CarPartsStore.model.Status;
 import org.springframework.stereotype.Service;
 

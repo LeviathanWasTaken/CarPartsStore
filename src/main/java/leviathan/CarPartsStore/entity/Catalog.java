@@ -1,4 +1,4 @@
-package leviathan.CarPartsStore.domain;
+package leviathan.CarPartsStore.entity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

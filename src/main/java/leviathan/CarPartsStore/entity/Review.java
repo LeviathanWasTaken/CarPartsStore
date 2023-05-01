@@ -1,4 +1,4 @@
-package leviathan.CarPartsStore.domain;
+package leviathan.CarPartsStore.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,26 +10,29 @@ import java.util.UUID;
 import lombok.Data;
 
 @Entity
-@Table(name = "cartItems")
+@Table(name = "reviews")
 @Data
-public class CartItem {
+public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID cartItemUUID;
+    private UUID reviewUUID;
     @ManyToOne
-    private Cart cart;
-    private int quantity;
+    private User author;
     @ManyToOne
     private Product product;
+    private int mark;
+    private int relevance;
+    private String body;
 
-    public CartItem() {
-    }
-
-    public CartItem(Cart cart, int quantity, Product product) {
-        this.cart = cart;
-        this.quantity = quantity;
+    public Review(User author, int mark, String body, Product product) {
+        this.author = author;
+        this.mark = mark;
+        this.body = body;
         this.product = product;
+        relevance = 0;
     }
 
+    public Review() {
+    }
 }

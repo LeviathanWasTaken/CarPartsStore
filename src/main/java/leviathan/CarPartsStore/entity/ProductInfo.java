@@ -1,4 +1,4 @@
-package leviathan.CarPartsStore.domain;
+package leviathan.CarPartsStore.entity;
 
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
