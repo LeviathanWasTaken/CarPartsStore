@@ -18,15 +18,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
 @Table(name = "users")
 @Data
-// TODO: 01.05.2023 Нельзя в Entity использовать бизнес логику и имплементировать UserDetails,
-//  надо ссделать отдельный класс и мапить данные на него
-public class User implements UserDetails {
+@NoArgsConstructor
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -55,44 +55,5 @@ public class User implements UserDetails {
         name = login;
         deliveryAddress = "";
         email = "";
-    }
-
-    public User() {
-    }
-
-    // TODO: 01.05.2023 Убрать в другой класс
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles();
-    }
-
-    @Override
-    public String getPassword() {
-        return null;
-    }
-
-    @Override
-    public String getUsername() {
-        return null;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
     }
 }

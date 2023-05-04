@@ -2,7 +2,7 @@ package leviathan.CarPartsStore.services;
 
 import leviathan.CarPartsStore.entity.Cart;
 import leviathan.CarPartsStore.entity.CartItem;
-import leviathan.CarPartsStore.model.Status;
+import leviathan.CarPartsStore.domain.RemovalStatus;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -114,7 +114,7 @@ public class CartService {
     public int calculateTotalPriceOfActiveElementsInCart(Cart cart) {
         int totalPrice = 0;
         for (CartItem cartItem : cart.getCartItems().stream().filter(
-              cartItem -> cartItem.getProduct().getStatus().equals(Status.ACTIVE)).toList()) {
+              cartItem -> cartItem.getProduct().getRemovalStatus().equals(RemovalStatus.ACTIVE)).toList()) {
             totalPrice += cartItem.getProduct().getProductInfo().getPriceInPennies() * cartItem.getQuantity();
         }
         return totalPrice;
@@ -123,7 +123,7 @@ public class CartService {
     public int calculateTotalAmountOfActiveElementsInCart(Cart cart) {
         int totalAmount = 0;
         for (CartItem cartItem : cart.getCartItems().stream().filter(
-              cartItem -> cartItem.getProduct().getStatus().equals(Status.ACTIVE)).toList()) {
+              cartItem -> cartItem.getProduct().getRemovalStatus().equals(RemovalStatus.ACTIVE)).toList()) {
             totalAmount += cartItem.getQuantity();
         }
         return totalAmount;

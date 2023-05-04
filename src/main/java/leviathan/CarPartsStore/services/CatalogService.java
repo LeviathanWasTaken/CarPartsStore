@@ -3,9 +3,12 @@ package leviathan.CarPartsStore.services;
 import jakarta.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
+import leviathan.CarPartsStore.domain.CatalogDTO;
+import leviathan.CarPartsStore.domain.RemovalStatus;
 import leviathan.CarPartsStore.entity.Catalog;
 import leviathan.CarPartsStore.entity.Product;
-import leviathan.CarPartsStore.model.Status;
 import leviathan.CarPartsStore.repos.CatalogRepo;
 import leviathan.CarPartsStore.repos.ProductRepo;
 import org.springframework.stereotype.Service;
@@ -22,121 +25,140 @@ public class CatalogService {
         this.productRepo = productRepo;
     }
 
-    public List<Catalog> getAllChildCatalogs(String uniqueTag) {
-        return catalogRepo.findByUniqueTag(uniqueTag).orElseThrow(
-              () -> new IllegalArgumentException("THERE IS NO " + uniqueTag)
-        ).getChildren().stream().toList();
+    /**
+     *
+     * @param parentName name of the parent
+     * @return returns children that have direct connection to the given parent
+     */
+    public List<CatalogDTO> getActiveChildCatalogs(String parentName) {
+        Catalog parent = catalogRepo.findByName(parentName).orElseThrow(
+                () -> new IllegalArgumentException("There is no catalog with name: " + parentName)
+        );
+        List<Catalog> children = catalogRepo.findAllByParentAndRemovalStatus(parent, RemovalStatus.ACTIVE);
+        return convertCatalogToCatalogDTO(children);
     }
 
-    public List<Catalog> getAllActiveChildCatalogs(String uniqueTag) {
-        return catalogRepo.findByUniqueTag(uniqueTag).orElseThrow(
-              () -> new IllegalArgumentException("THERE IS NO " + uniqueTag)
-        ).getChildren().stream().filter(catalog -> catalog.getStatus().equals(Status.ACTIVE)).toList();
+    /**
+     *
+     * @return returns all catalogs from database
+     */
+    public List<CatalogDTO> getAllCatalogs() {
+        List<CatalogDTO> catalogs = new ArrayList<>();
+        List<Catalog> catalogsFromDB = (List<Catalog>) catalogRepo.findAll();
+        return convertCatalogToCatalogDTO(catalogsFromDB);
     }
 
-    public List<Catalog> getAllCatalogs() {
-        List<Catalog> catalogs = new ArrayList<>();
-        Catalog root = catalogRepo.findByUniqueTag("ROOT").orElseThrow(
-              () -> new IllegalArgumentException("SHIT! SHIT! SHIT! THERE IS NO ROOT"));
-        return catalogRepo.findAllByLeftGreaterThanAndRightLessThan(root.getLeft(), root.getRight());
+    /**
+     * Finds top 5 active catalogs by popularity
+     * @return List<CatalogDTO>
+     */
+    public List<CatalogDTO> getTop5ActiveByPopularity() {
+        List<Catalog> catalogs = catalogRepo.findFirst5ByRemovalStatusOrderByPopularityDesc(RemovalStatus.ACTIVE);
+        return convertCatalogToCatalogDTO(catalogs);
     }
 
-    public Catalog getCatalog(String uniqueTag) {
-        return catalogRepo.findByUniqueTag(uniqueTag).orElse(null);
-    }
-
-    public List<Catalog> getTop5ActiveByPopularity() {
-        Catalog root = catalogRepo.findByUniqueTag("ROOT").orElseThrow(
-              () -> new IllegalArgumentException("SHIT! SHIT! SHIT! THERE IS NO ROOT"));
-        return catalogRepo.findFirst5ByStatusAndLeftGreaterThanAndRightLessThanOrderByPopularityDesc(Status.ACTIVE,
-                                                                                                     root.getLeft(),
-                                                                                                     root.getRight());
-    }
-
-    public void addNewCatalog(Catalog parent, String catalogName, String imgSource, String uniqueTag) {
-        Catalog newCatalog = new Catalog(catalogName, imgSource, uniqueTag, Status.ACTIVE);
+    /**
+     * Maps CatalogDTO to Catalog and calls addChild method
+     * @param parentCatalogUUID UUID of parent catalog
+     * @param newCatalogDTO new catalog
+     */
+    public void addNewCatalog(UUID parentCatalogUUID, CatalogDTO newCatalogDTO) {
+        Catalog parent = catalogRepo.findById(parentCatalogUUID).orElseThrow(
+                () -> new IllegalArgumentException("There is no catalog with UUID: " + parentCatalogUUID)
+        );
+        Catalog newCatalog = new Catalog(newCatalogDTO.getCatalogName(), newCatalogDTO.getCatalogPicture(), RemovalStatus.ACTIVE);
         addChild(parent, newCatalog);
     }
 
-    public void addNewCatalog(Catalog parent, String catalogName, String imgSource, String uniqueTag, Status status) {
-        Catalog newCatalog = new Catalog(catalogName, imgSource, uniqueTag, status);
-        addChild(parent, newCatalog);
-    }
-
-    public void modifyCatalog(Catalog catalog,
-                              String catalogName,
-                              String imgSource,
-                              String uniqueTag,
-                              long popularity) {
-        if (catalogRepo.findByUniqueTag(uniqueTag).isEmpty()) {
-            catalog.setUniqueTag(uniqueTag);
-        }
-        catalog.setCatalogName(catalogName);
-        catalog.setImgSource(imgSource);
-        catalog.setPopularity(popularity);
+    /**
+     * Modifies the catalog in database
+     * @param catalogDTO
+     */
+    public void modifyCatalog(CatalogDTO catalogDTO) {
+        Catalog catalog = catalogRepo.findById(catalogDTO.getCatalogUUID()).orElseThrow(
+                () -> new IllegalArgumentException("There is no catalog with UUID: " + catalogDTO.getCatalogUUID())
+        );
+        catalog.setCatalogName(catalogDTO.getCatalogName());
+        catalog.setImgSource(catalogDTO.getCatalogPicture());
+        catalog.setPopularity(catalogDTO.getPopularity());
         catalogRepo.save(catalog);
     }
 
-    //cascade removal
+    /**
+     * Sets to the given catalog RemovalStatus.REMOVED. Then performs cascade removal of all its children and products.
+     * @param catalogUUID
+     */
     @Transactional
-    public void removeCatalog(Catalog catalog) {
-        catalog.setStatus(Status.CATALOG_REMOVED);
+    public void removeCatalog(UUID catalogUUID) {
+        Catalog catalog = catalogRepo.findById(catalogUUID).orElseThrow(
+                () -> new IllegalArgumentException("There is no catalog with UUID: " + catalogUUID)
+        );
+        catalog.setRemovalStatus(RemovalStatus.REMOVED);
+        childrenCascadeRemoval(catalogRepo.findAllByLeftGreaterThanAndRightLessThan(catalog.getLeft(), catalog.getRight()));
         catalogRepo.save(catalog);
-        List<Catalog> allChildren = catalogRepo.findAllByLeftGreaterThanAndRightLessThan(
-              catalog.getLeft(), catalog.getRight()
-        ).stream().filter(
-              catalogChild -> catalogChild.getStatus().equals(Status.ACTIVE)
-        ).toList();
-        storeRemovedChildrenCatalogsInDb(allChildren);
     }
 
-    private void storeRemovedChildrenCatalogsInDb(List<Catalog> allChildren) {
-        for (Catalog child : allChildren) {
-            child.setStatus(Status.PARENT_CATALOG_REMOVED);
-            catalogRepo.save(child);
-            List<Product> products = child.getProducts().stream().filter(
-                  product -> product.getStatus().equals(Status.ACTIVE)
-            ).toList();
-            for (Product product : products) {
-                product.setStatus(Status.CATALOG_REMOVED);
-                productRepo.save(product);
-            }
+    /**
+     * Sets to children catalogs RemovalStatus.PARENT_REMOVED and saves in database. Ignores those catalogs that are already removed.
+     * @param catalogs
+     */
+    private void childrenCascadeRemoval(List<Catalog> catalogs) {
+        catalogs = catalogs.stream().filter(
+                catalog -> !catalog.getRemovalStatus().equals(RemovalStatus.REMOVED)
+        ).toList();
+        for (Catalog catalog : catalogs) {
+            catalog.setRemovalStatus(RemovalStatus.PARENT_REMOVED);
+            removeProducts(catalog);
+            catalogRepo.save(catalog);
         }
     }
 
     /**
-     * method for bla bla bla
-     *
-     * @param catalog catalog to restore
+     * Sets to all products for given catalog RemovalStatus.PARENT_REMOVED and saves in database. Ignores those that are already removed.
+     * @param catalog
      */
-    //cascade restore
-    @Transactional
-    public void restoreCatalog(Catalog catalog) {
-        catalog.setStatus(Status.ACTIVE);
-        catalogRepo.save(catalog);
-        List<Catalog> allChildren = catalogRepo.findAllByLeftGreaterThanAndRightLessThan(
-              catalog.getLeft(), catalog.getRight()
-        );
-        List<Catalog> removedChildren = allChildren.stream().filter(
-              child -> child.getStatus().equals(Status.CATALOG_REMOVED)
+    private void removeProducts(Catalog catalog) {
+        List<Product> products = catalog.getProducts();
+        products = products.stream().filter(
+                product -> !product.getRemovalStatus().equals(RemovalStatus.REMOVED)
         ).toList();
-        for (Catalog child : allChildren) {
-            if (!removedChildren.contains(child) && removedChildren.stream().noneMatch(
-                  removedChild -> removedChild.getLeft() < child.getLeft() && removedChild.getRight() > child.getRight()
-            )) {
-                child.setStatus(Status.ACTIVE);
-                catalogRepo.save(child);
-                List<Product> products = child.getProducts().stream().filter(
-                      product -> product.getStatus().equals(Status.CATALOG_REMOVED)
-                ).toList();
-                for (Product product : products) {
-                    product.setStatus(Status.ACTIVE);
-                    productRepo.save(product);
-                }
-            }
+        for (Product product : products) {
+            product.setRemovalStatus(RemovalStatus.PARENT_REMOVED);
+            productRepo.save(product);
         }
     }
 
+    /**
+     *
+     */
+   @Transactional
+   public void restoreCatalog() {
+
+   }
+
+    /**
+     * Maps list of Catalog to list of CatalogDTO
+     * @param catalogs list of Catalog
+     * @return List<CatalogDTO>
+     */
+    public List<CatalogDTO> convertCatalogToCatalogDTO(List<Catalog> catalogs) {
+        List<CatalogDTO> result = new ArrayList<>();
+        for (Catalog catalog : catalogs) {
+            result.add(new CatalogDTO(
+                    catalog.getUUID(),
+                    catalog.getCatalogName(),
+                    catalog.getImgSource(),
+                    catalog.getPopularity()
+            ));
+        }
+        return result;
+    }
+
+    /**
+     * Adds child to the parent catalog, expands borders of all parents and saves it to database
+     * @param parent parent catalog
+     * @param child child catalog
+     */
     @Transactional
     public void addChild(Catalog parent, Catalog child) {
         parent.getChildren().add(child);

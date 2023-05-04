@@ -6,7 +6,7 @@ import java.util.UUID;
 import leviathan.CarPartsStore.entity.Catalog;
 import leviathan.CarPartsStore.entity.Product;
 import leviathan.CarPartsStore.entity.ProductInfo;
-import leviathan.CarPartsStore.model.Status;
+import leviathan.CarPartsStore.domain.RemovalStatus;
 import leviathan.CarPartsStore.repos.ProductInfoRepo;
 import leviathan.CarPartsStore.repos.ProductRepo;
 import org.springframework.data.domain.Page;
@@ -39,7 +39,7 @@ public class ProductsService {
 
     public Page<Product> getActiveProductsByCatalogUUIDPaginated(UUID catalogUUID, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return productRepo.findProductsByCatalogUUIDAndStatus(catalogUUID, Status.ACTIVE, pageable);
+        return productRepo.findProductsByCatalogUUIDAndStatus(catalogUUID, RemovalStatus.ACTIVE, pageable);
     }
 
     @Transactional
@@ -56,7 +56,7 @@ public class ProductsService {
 
     @Transactional
     public void removeProduct(Product product) {
-        product.setStatus(Status.PRODUCT_REMOVED);
+        product.setRemovalStatus(RemovalStatus.PRODUCT_REMOVED);
         productRepo.save(product);
     }
 

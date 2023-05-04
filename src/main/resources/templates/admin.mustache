@@ -41,8 +41,8 @@
                     <td><input type="text" name="imgSource" value="{{#catalog}}{{imgPath}}{{/catalog}}" required></td>
                     <td><input type="number" name="popularity" value="{{#catalog}}{{popularity}}{{/catalog}}" required min="0"></td>
                     <td>
-                        <select name="status" required>
-                            <option value="{{#catalog}}{{status}}{{/catalog}}" selected>{{#catalog}}{{status}}{{/catalog}}</option>
+                        <select name="removalStatus" required>
+                            <option value="{{#catalog}}{{removalStatus}}{{/catalog}}" selected>{{#catalog}}{{removalStatus}}{{/catalog}}</option>
                             {{#statusUnselected}}
                                 <option value="{{name}}">{{name}}</option>
                             {{/statusUnselected}}
@@ -108,8 +108,8 @@
                     <td><input type="text" name="imgSource" value="{{#product}}{{#productInfo}}{{imgSource}}{{/productInfo}}{{/product}}" required></td>
                     <td><input type="number" name="priceInPennies" value="{{#product}}{{#productInfo}}{{priceInPennies}}{{/productInfo}}{{/product}}" required min="0"></td>
                     <td>
-                        <select name="status" required>
-                            <option value="{{#product}}{{status}}{{/product}}" selected>{{#product}}{{status}}{{/product}}</option>
+                        <select name="removalStatus" required>
+                            <option value="{{#product}}{{removalStatus}}{{/product}}" selected>{{#product}}{{removalStatus}}{{/product}}</option>
                             {{#statusUnselected}}
                                 <option value="{{name}}">{{name}}</option>
                             {{/statusUnselected}}

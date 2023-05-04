@@ -1334,7 +1334,7 @@
 											"top": 2458,
 											"width": 166,
 											"height": 13,
-											"text": "+Status status",
+											"text": "+Status removalStatus",
 											"horizontalAlignment": 0
 										}
 									],
@@ -1580,7 +1580,7 @@
 											"top": 2435,
 											"width": 206,
 											"height": 13,
-											"text": "+Status status",
+											"text": "+Status removalStatus",
 											"horizontalAlignment": 0
 										},
 										{
@@ -19769,7 +19769,7 @@
 							"_parent": {
 								"$ref": "AAAAAAGHvrlBU9IFy40="
 							},
-							"name": "Status status",
+							"name": "Status removalStatus",
 							"type": ""
 						}
 					]
@@ -19925,7 +19925,7 @@
 							"_parent": {
 								"$ref": "AAAAAAGHvrlYGtIvRGs="
 							},
-							"name": "Status status",
+							"name": "Status removalStatus",
 							"type": ""
 						},
 						{

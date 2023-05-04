@@ -32,9 +32,15 @@ public class MainController {
     public ModelAndView homePage(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("home");
+        mav.addObject("top5Catalogs", catalogService.getTop5ActiveByPopularity());
+        mav.addObject("allCatalogs", catalogService.getActiveChildCatalogs("ROOT"));
+
+        /*
         mav = userService.putMainUserInfo(mav, oAuth2AuthenticationToken, authorizationService);
         mav.addObject("top5Catalogs", catalogService.getTop5ActiveByPopularity());
         mav.addObject("allCatalogs", catalogService.getAllActiveChildCatalogs("ROOT"));
+
+         */
         return mav;
     }
 }

@@ -36,7 +36,7 @@ create table catalogs
     left_boundary  integer,
     popularity     bigint not null,
     right_boundary integer,
-    status         smallint,
+    removalStatus         smallint,
     unique_tag     varchar(255)
         constraint uk_l7psicqxnc8lj3gwofc48xlkp
             unique,
@@ -72,7 +72,7 @@ create table products
 (
     productuuid  uuid not null
         primary key,
-    status       smallint,
+    removalStatus       smallint,
     unique_tag   varchar(255)
         constraint uk_ondcvovwm2o1w6yrh0u41k2dm
             unique,

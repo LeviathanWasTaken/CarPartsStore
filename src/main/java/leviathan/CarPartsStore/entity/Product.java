@@ -11,7 +11,8 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.List;
 import java.util.UUID;
-import leviathan.CarPartsStore.model.Status;
+
+import leviathan.CarPartsStore.domain.RemovalStatus;
 import lombok.Data;
 
 @Entity
@@ -31,7 +32,7 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private List<CartItem> cartItems;
     @Column(name = "status")
-    private Status status;
+    private RemovalStatus removalStatus;
     @OneToMany(mappedBy = "product")
     private List<Review> reviews;
 
@@ -40,7 +41,7 @@ public class Product {
 
     public Product(Catalog catalog, String uniqueTag) {
         this.catalog = catalog;
-        status = Status.ACTIVE;
+        removalStatus = RemovalStatus.ACTIVE;
     }
 
 }
