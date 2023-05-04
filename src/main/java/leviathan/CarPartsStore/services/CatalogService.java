@@ -95,6 +95,7 @@ public class CatalogService {
         );
         catalog.setRemovalStatus(RemovalStatus.REMOVED);
         childrenCascadeRemoval(catalogRepo.findAllByLeftGreaterThanAndRightLessThan(catalog.getLeft(), catalog.getRight()));
+        removeProducts(catalog);
         catalogRepo.save(catalog);
     }
 
@@ -132,10 +133,44 @@ public class CatalogService {
      *
      */
    @Transactional
-   public void restoreCatalog() {
-
+   public void restoreCatalog(UUID catalogUUID) {
+       Catalog catalog = catalogRepo.findById(catalogUUID).orElseThrow(
+               () -> new IllegalArgumentException("There is no catalog with UUID: " + catalogUUID)
+       );
+       catalog.setRemovalStatus(RemovalStatus.ACTIVE);
+       childrenCascadeRestore(catalogRepo.findAllByLeftGreaterThanAndRightLessThan(catalog.getLeft(), catalog.getRight()));
+       restoreProducts(catalog);
+       catalogRepo.save(catalog);
    }
 
+
+   private void childrenCascadeRestore(List<Catalog> children) {
+       List<Catalog> removedCatalogs = children.stream().filter(
+               catalog -> catalog.getRemovalStatus().equals(RemovalStatus.REMOVED)
+       ).toList();
+       List<Catalog> unrestorable = new ArrayList<>();
+       for (Catalog catalog : removedCatalogs) {
+           unrestorable.addAll(catalogRepo.findAllByLeftGreaterThanAndRightLessThan(catalog.getLeft(), catalog.getRight()));
+       }
+       for (Catalog catalog : children) {
+           if (catalog.getRemovalStatus().equals(RemovalStatus.PARENT_REMOVED) && !unrestorable.contains(catalog)) {
+               catalog.setRemovalStatus(RemovalStatus.ACTIVE);
+               restoreProducts(catalog);
+               catalogRepo.save(catalog);
+           }
+       }
+   }
+
+   private void restoreProducts(Catalog catalog) {
+       List<Product> products = catalog.getProducts();
+       products = products.stream().filter(
+               product -> !product.getRemovalStatus().equals(RemovalStatus.REMOVED)
+       ).toList();
+       for (Product product : products) {
+           product.setRemovalStatus(RemovalStatus.ACTIVE);
+           productRepo.save(product);
+       }
+   }
     /**
      * Maps list of Catalog to list of CatalogDTO
      * @param catalogs list of Catalog
