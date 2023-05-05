@@ -39,7 +39,7 @@ public class ProductsService {
 
     public Page<Product> getActiveProductsByCatalogUUIDPaginated(UUID catalogUUID, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return productRepo.findProductsByCatalogUUIDAndStatus(catalogUUID, RemovalStatus.ACTIVE, pageable);
+        return productRepo.findProductsByCatalogUUIDAndRemovalStatus(catalogUUID, RemovalStatus.ACTIVE, pageable);
     }
 
     @Transactional
@@ -56,7 +56,7 @@ public class ProductsService {
 
     @Transactional
     public void removeProduct(Product product) {
-        product.setRemovalStatus(RemovalStatus.PRODUCT_REMOVED);
+        product.setRemovalStatus(RemovalStatus.REMOVED);
         productRepo.save(product);
     }
 

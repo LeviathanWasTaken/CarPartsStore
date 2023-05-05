@@ -1,6 +1,6 @@
 <div class="user-bar-container">
     <div class="user-bar">
-        {{#isUserAuthorized}}
+        {{#isAuthenticated}}
             {{#user}}
                 <div class="user-card">
                     <img class="user-pfp" src="{{avatar}}" alt="">
@@ -13,18 +13,20 @@
                     </div>
                 </div>
             {{/user}}
-            <div class="cart" href="/">
-                <a href="/cart" class="cart-details">
-                    <div class="goods">{{totalAmountOfItemsInCart}} items</div>
-                    <div class="price">$<span id="price">{{totalPriceOfItemsInCart}}</span>
+            {{#cart}}
+                <a class="cart" href="/cart">
+                    <div class="cart-details">
+                        <div class="goods">{{totalQuantityOfItemsInCart}} items</div>
+                        <div class="price">$<span id="price">{{totalPriceInPennies}}</span>
+                        </div>
                     </div>
+                    <img src="/static/img/basket.svg" alt="cart">
                 </a>
-                <img src="/static/img/basket.svg" alt="cart">
-            </div>
-        {{/isUserAuthorized}}
-        {{^isUserAuthorized}}
+            {{/cart}}
+        {{/isAuthenticated}}
+        {{^isAuthenticated}}
             <a class="login-link" href="/login">Login with Github</a>
-        {{/isUserAuthorized}}
+        {{/isAuthenticated}}
     </div>
     <script>
         var valueElement = document.getElementById("price");

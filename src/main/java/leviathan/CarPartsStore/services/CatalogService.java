@@ -31,7 +31,7 @@ public class CatalogService {
      * @return returns children that have direct connection to the given parent
      */
     public List<CatalogDTO> getActiveChildCatalogs(String parentName) {
-        Catalog parent = catalogRepo.findByName(parentName).orElseThrow(
+        Catalog parent = catalogRepo.findByCatalogName(parentName).orElseThrow(
                 () -> new IllegalArgumentException("There is no catalog with name: " + parentName)
         );
         List<Catalog> children = catalogRepo.findAllByParentAndRemovalStatus(parent, RemovalStatus.ACTIVE);
@@ -53,7 +53,7 @@ public class CatalogService {
      * @return List<CatalogDTO>
      */
     public List<CatalogDTO> getTop5ActiveByPopularity() {
-        List<Catalog> catalogs = catalogRepo.findFirst5ByRemovalStatusOrderByPopularityDesc(RemovalStatus.ACTIVE);
+        List<Catalog> catalogs = catalogRepo.findFirst5ByRemovalStatusAndCatalogNameIsNotOrderByPopularityDesc(RemovalStatus.ACTIVE, "ROOT");
         return convertCatalogToCatalogDTO(catalogs);
     }
 

@@ -20,10 +20,10 @@
             <nav>
                 <div class="catalogs-top5">
                     {{#top5Catalogs}}
-                        <div class="catalogs-top5-tile">
-                            <img class="catalogs-top5-icon" src="{{imgSource}}" alt="">
-                            <a href="/catalog/{{UUID}}">{{catalogName}}</a>
-                        </div>
+                        <a class="catalogs-top5-tile" href="/catalog/{{catalogName}}">
+                            <img class="catalogs-top5-icon" src="{{catalogPicture}}" alt="">
+                            <span>{{catalogName}}</span>
+                        </a>
                     {{/top5Catalogs}}
                 </div>
             </nav>

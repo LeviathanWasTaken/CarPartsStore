@@ -17,7 +17,7 @@
     font-family: Arial, Helvetica, sans-serif;
     font-size: 40px;
     font-weight: bold;
-    color: #24292e;
+    color: var(--nav-text-color);
     line-height: 1.5;
 }
 

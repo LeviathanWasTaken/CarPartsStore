@@ -4,6 +4,10 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+
+import jakarta.transaction.Transactional;
+import leviathan.CarPartsStore.domain.CartDTO;
+import leviathan.CarPartsStore.domain.UserDTO;
 import leviathan.CarPartsStore.entity.Cart;
 import leviathan.CarPartsStore.entity.Roles;
 import leviathan.CarPartsStore.entity.User;
@@ -41,18 +45,29 @@ public class UserService {
 
  */
 
-    public User createNewUserByGithubAttributes(Map<String, Object> attributes) {
+    @Transactional
+    public UserDTO createNewUserByGithubAttributes(Map<String, Object> attributes) {
         Cart cart = new Cart();
         cartRepo.save(cart);
-
         User user = new User((int) attributes.get("id"),
                              (String) attributes.get("avatar_url"),
                              (String) attributes.get("login"),
                              cart,
-                             Collections.singleton(Roles.ADMIN)
+                             Collections.singleton(Roles.USER)
         );
         userRepo.save(user);
-        return user;
+        user = userRepo.findByGithubId((int) attributes.get("id")).orElseThrow(
+                () -> new RuntimeException("Unable to create new user")
+        );
+        return new UserDTO(
+                user.getUuid(),
+                user.getName(),
+                user.getLogin(),
+                user.getAvatar(),
+                user.getEmail(),
+                user.getDeliveryAddress(),
+                user.getRoles()
+        );
     }
 
     public Iterable<User> getAllUsers() {
@@ -63,27 +78,33 @@ public class UserService {
         userRepo.save(user);
     }
 
-    public Optional<User> getUserByGithubId(int id) {
-        return userRepo.findByGithubId(id);
+    public UserDTO getUserByGithubId(int id) {
+        User user = userRepo.findByGithubId(id).orElse(null);
+        return
+                user==null ? null : new UserDTO(
+                    user.getUuid(),
+                    user.getName(),
+                    user.getLogin(),
+                    user.getAvatar(),
+                    user.getEmail(),
+                    user.getDeliveryAddress(),
+                    user.getRoles()
+                );
     }
 
     public Optional<User> getByUUID(UUID userUUID) {
         return userRepo.findById(userUUID);
     }
 
-
-    public ModelAndView putMainUserInfo(ModelAndView mav,
-                                        OAuth2AuthenticationToken oAuth2AuthenticationToken,
-                                        AuthorizationService authorizationService) {
-        boolean isUserAuthorized = oAuth2AuthenticationToken != null;
-        mav.addObject("isUserAuthorized", isUserAuthorized);
-        if (isUserAuthorized) {
-            User user = authorizationService.authorize(oAuth2AuthenticationToken);
-            Cart cart = user.getCart();
-            mav.addObject("user", user);
-            mav.addObject("totalPriceOfItemsInCart", cartService.calculateTotalPriceOfActiveElementsInCart(cart));
-            mav.addObject("totalAmountOfItemsInCart", cartService.calculateTotalAmountOfActiveElementsInCart(cart));
-        }
-        return mav;
+    public CartDTO getUserCartByUserUUID(UUID userUUID) {
+        User user = userRepo.findById(userUUID).orElseThrow(
+                () -> new IllegalArgumentException("There is no user with UUID: " + userUUID)
+        );
+        CartDTO cart = new CartDTO();
+        cart.setCartUUID(user.getCart().getCartUUID());
+        cart.setTotalQuantityOfItemsInCart(cartService.calculateTotalPriceOfActiveElementsInCart(user.getCart().getCartUUID()));
+        cart.setTotalQuantityOfItemsInCart(cartService.calculateTotalAmountOfActiveElementsInCart(user.getCart().getCartUUID()));
+        return cart;
     }
+
 }

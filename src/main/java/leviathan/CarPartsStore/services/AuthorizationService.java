@@ -1,12 +1,14 @@
 package leviathan.CarPartsStore.services;
 
 import java.util.Map;
-import leviathan.CarPartsStore.entity.User;
+
+import leviathan.CarPartsStore.domain.UserDTO;
 import org.springframework.security.oauth2.client.ClientAuthorizationException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,7 +22,7 @@ public class AuthorizationService {
         this.userService = userService;
     }
 
-    public User authorize(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+    public UserDTO authorize(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
         String registrationId = oAuth2AuthenticationToken.getAuthorizedClientRegistrationId();
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(registrationId);
         if (clientRegistration != null) {
@@ -28,20 +30,24 @@ public class AuthorizationService {
             if (provider.contains("google")) {
                 return null;
             } else if (provider.contains("github")) {
-                return authorizeViaGithub(oAuth2AuthenticationToken.getPrincipal().getAttributes());
+                return authorizeViaGithub(oAuth2AuthenticationToken.getPrincipal());
             }
         } else {
-            throw new ClientAuthorizationException(new OAuth2Error("Invalid"), registrationId);
+            throw new ClientAuthorizationException(new OAuth2Error("Invalid client registration"), registrationId);
         }
         return null;
     }
 
-    public boolean isUserAuthorized(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+    public boolean isUserAuthenticated(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
         return oAuth2AuthenticationToken != null;
     }
 
-    public User authorizeViaGithub(Map<String, Object> attributes) {
-        return userService.getUserByGithubId((int) attributes.get("id"))
-              .orElseGet(() -> userService.createNewUserByGithubAttributes(attributes));
+    public UserDTO authorizeViaGithub(OAuth2User oAuth2User) {
+        Map<String, Object> attributes = oAuth2User.getAttributes();
+        UserDTO user = userService.getUserByGithubId((int) attributes.get("id"));
+        if (user == null) {
+            user = userService.createNewUserByGithubAttributes(attributes);
+        }
+        return user;
     }
 }

@@ -28,7 +28,7 @@ public class CatalogController {
         this.catalogService = catalogService;
         this.userService = userService;
     }
-
+/*
     @GetMapping("/catalog/{catalogTag}")
     public ModelAndView getCatalog(@PathVariable UUID catalogTag, OAuth2AuthenticationToken oAuth2AuthenticationToken) {
         ModelAndView mav = new ModelAndView();
@@ -39,4 +39,6 @@ public class CatalogController {
 
         return mav;
     }
+
+ */
 }

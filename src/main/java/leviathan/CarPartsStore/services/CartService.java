@@ -3,10 +3,18 @@ package leviathan.CarPartsStore.services;
 import leviathan.CarPartsStore.entity.Cart;
 import leviathan.CarPartsStore.entity.CartItem;
 import leviathan.CarPartsStore.domain.RemovalStatus;
+import leviathan.CarPartsStore.repos.CartRepo;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 
 @Service
 public class CartService {
+    private final CartRepo cartRepo;
+
+    public CartService(CartRepo cartRepo) {
+        this.cartRepo = cartRepo;
+    }
     /*
     private final UserService userService;
     private final CartItemRepo cartItemRepo;
@@ -111,7 +119,15 @@ public class CartService {
 
  */
 
-    public int calculateTotalPriceOfActiveElementsInCart(Cart cart) {
+    public Cart getCartFromDBByUUID(UUID cartUUID) {
+        return cartRepo.findById(cartUUID).orElseThrow(
+                () -> new IllegalArgumentException("There is no cart with cartUUID: " + cartUUID)
+        );
+    }
+
+
+    public int calculateTotalPriceOfActiveElementsInCart(UUID cartUUID) {
+        Cart cart = getCartFromDBByUUID(cartUUID);
         int totalPrice = 0;
         for (CartItem cartItem : cart.getCartItems().stream().filter(
               cartItem -> cartItem.getProduct().getRemovalStatus().equals(RemovalStatus.ACTIVE)).toList()) {
@@ -120,7 +136,8 @@ public class CartService {
         return totalPrice;
     }
 
-    public int calculateTotalAmountOfActiveElementsInCart(Cart cart) {
+    public int calculateTotalAmountOfActiveElementsInCart(UUID cartUUID) {
+        Cart cart = getCartFromDBByUUID(cartUUID);
         int totalAmount = 0;
         for (CartItem cartItem : cart.getCartItems().stream().filter(
               cartItem -> cartItem.getProduct().getRemovalStatus().equals(RemovalStatus.ACTIVE)).toList()) {

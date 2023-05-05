@@ -1,5 +1,6 @@
 package leviathan.CarPartsStore.controllers;
 
+import leviathan.CarPartsStore.domain.UserDTO;
 import leviathan.CarPartsStore.services.AuthorizationService;
 import leviathan.CarPartsStore.services.CartService;
 import leviathan.CarPartsStore.services.CatalogService;
@@ -33,14 +34,14 @@ public class MainController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("home");
         mav.addObject("top5Catalogs", catalogService.getTop5ActiveByPopularity());
-        mav.addObject("allCatalogs", catalogService.getActiveChildCatalogs("ROOT"));
-
-        /*
-        mav = userService.putMainUserInfo(mav, oAuth2AuthenticationToken, authorizationService);
-        mav.addObject("top5Catalogs", catalogService.getTop5ActiveByPopularity());
-        mav.addObject("allCatalogs", catalogService.getAllActiveChildCatalogs("ROOT"));
-
-         */
+        mav.addObject("catalogsList", catalogService.getActiveChildCatalogs("ROOT"));
+        boolean isAuthenticated = authorizationService.isUserAuthenticated(oAuth2AuthenticationToken);
+        mav.addObject("isAuthenticated", isAuthenticated);
+        if (isAuthenticated) {
+            UserDTO user = authorizationService.authorize(oAuth2AuthenticationToken);
+            mav.addObject("user", user);
+            mav.addObject("cart", userService.getUserCartByUserUUID(user.getUserUUID()));
+        }
         return mav;
     }
 }

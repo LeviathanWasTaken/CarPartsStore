@@ -12,5 +12,5 @@ public interface ProductRepo extends CrudRepository<Product, UUID> {
 
     Optional<Product> findByUniqueTag(String uniqueTag);
 
-    Page<Product> findProductsByCatalogUUIDAndStatus(UUID catalogUUID, RemovalStatus removalStatus, Pageable pageable);
+    Page<Product> findProductsByCatalogUUIDAndRemovalStatus(UUID catalogUUID, RemovalStatus removalStatus, Pageable pageable);
 }

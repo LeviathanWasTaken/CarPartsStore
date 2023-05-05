@@ -6,6 +6,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import lombok.Data;
@@ -19,6 +21,6 @@ public class Cart {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID cartUUID;
     @OneToMany(mappedBy = "cart")
-    private List<CartItem> cartItems;
+    private List<CartItem> cartItems = new ArrayList<>();
 
 }
