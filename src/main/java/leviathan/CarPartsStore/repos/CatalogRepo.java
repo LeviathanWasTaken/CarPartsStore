@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import leviathan.CarPartsStore.domain.RemovalStatus;
 import leviathan.CarPartsStore.entity.Catalog;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 
 public interface CatalogRepo extends CrudRepository<Catalog, UUID> {

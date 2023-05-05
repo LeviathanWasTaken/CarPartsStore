@@ -14,4 +14,19 @@ public class CatalogDTO {
     private String catalogName;
     private String catalogPicture;
     private long popularity;
+    private String parentCatalogName;
+    private boolean isRemoved;
+    private RemovalStatus removalStatus;
+
+    public CatalogDTO(UUID catalogUUID, String catalogName, String catalogPicture) {
+        this.catalogUUID = catalogUUID;
+        this.catalogName = catalogName;
+        this.catalogPicture = catalogPicture;
+    }
+
+    public CatalogDTO(String catalogName, String catalogPicture, String parentCatalogName) {
+        this.catalogName = catalogName;
+        this.catalogPicture = catalogPicture;
+        this.parentCatalogName = parentCatalogName;
+    }
 }

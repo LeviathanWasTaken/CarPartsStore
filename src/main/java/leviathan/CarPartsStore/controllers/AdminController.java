@@ -1,9 +1,29 @@
 package leviathan.CarPartsStore.controllers;
 
+import jakarta.servlet.http.HttpServletResponse;
+import leviathan.CarPartsStore.domain.CatalogDTO;
+import leviathan.CarPartsStore.domain.UserDTO;
+import leviathan.CarPartsStore.services.AuthorizationService;
+import leviathan.CarPartsStore.services.CatalogService;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.io.IOException;
 
 @Controller
 public class AdminController {
+    private final AuthorizationService authorizationService;
+    private final CatalogService catalogService;
+
+    public AdminController(AuthorizationService authorizationService, CatalogService catalogService) {
+        this.authorizationService = authorizationService;
+        this.catalogService = catalogService;
+    }
     /*
     private final UserService userService;
     private final CatalogService catalogService;
@@ -214,5 +234,43 @@ public class AdminController {
 
      */
 
+    @GetMapping("/admin")
+    public ModelAndView admin(@RequestParam(required = false) String message,
+                              @RequestParam(required = false, defaultValue = "default") String messageType,
+                              OAuth2AuthenticationToken oAuth2AuthenticationToken,
+                              HttpServletResponse httpServletResponse) throws IOException {
+        ModelAndView mav = new ModelAndView("admin");
+        UserDTO user = authorizationService.authorize(oAuth2AuthenticationToken);
+        boolean isUserAdmin = authorizationService.isUserAdmin(user.getUserUUID());
+        if (!isUserAdmin) {
+            httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return mav;
+        }
+        mav.addObject("top5Catalogs", catalogService.getTop5ActiveByPopularity());
+        mav.addObject("message", message);
+        mav.addObject("messageType", messageType);
+        mav.addObject("catalogs", catalogService.getAllCatalogs());
+        return mav;
+    }
 
+    @PostMapping("/admin/catalog")
+    public String addCatalog(OAuth2AuthenticationToken oAuth2AuthenticationToken,
+                             @RequestParam String catalogName,
+                             @RequestParam String catalogPicture,
+                             @RequestParam String parentCatalogName) {
+        String message;
+        String messageType;
+        UserDTO user = authorizationService.authorize(oAuth2AuthenticationToken);
+        if(authorizationService.isUserAdmin(user.getUserUUID())) {
+            CatalogDTO newCatalog = new CatalogDTO(catalogName, catalogPicture, parentCatalogName);
+            catalogService.addNewCatalog(newCatalog);
+            message = "Catalog " + catalogName + " successfully created.";
+            messageType = "success";
+        }
+        else {
+            message = "Unauthorized request";
+            messageType = "error";
+        }
+        return "redirect:/admin?message=" + message + "&messageType=" + messageType;
+    }
 }

@@ -1,8 +1,12 @@
 package leviathan.CarPartsStore.services;
 
 import java.util.Map;
+import java.util.UUID;
 
 import leviathan.CarPartsStore.domain.UserDTO;
+import leviathan.CarPartsStore.entity.Roles;
+import leviathan.CarPartsStore.entity.User;
+import leviathan.CarPartsStore.repos.UserRepo;
 import org.springframework.security.oauth2.client.ClientAuthorizationException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
@@ -16,10 +20,12 @@ public class AuthorizationService {
 
     private final UserService userService;
     private final ClientRegistrationRepository clientRegistrationRepository;
+    private final UserRepo userRepo;
 
-    public AuthorizationService(UserService userService, ClientRegistrationRepository clientRegistrationRepository) {
+    public AuthorizationService(UserService userService, ClientRegistrationRepository clientRegistrationRepository, UserRepo userRepo) {
         this.clientRegistrationRepository = clientRegistrationRepository;
         this.userService = userService;
+        this.userRepo = userRepo;
     }
 
     public UserDTO authorize(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
@@ -49,5 +55,12 @@ public class AuthorizationService {
             user = userService.createNewUserByGithubAttributes(attributes);
         }
         return user;
+    }
+
+    public boolean isUserAdmin(UUID userUUID) {
+        User user = userRepo.findById(userUUID).orElseThrow(
+                () -> new IllegalArgumentException("There is no user with UUID: " + userUUID)
+        );
+        return user.getRoles().contains(Roles.ADMIN);
     }
 }

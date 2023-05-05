@@ -11,6 +11,9 @@ import leviathan.CarPartsStore.entity.Catalog;
 import leviathan.CarPartsStore.entity.Product;
 import leviathan.CarPartsStore.repos.CatalogRepo;
 import leviathan.CarPartsStore.repos.ProductRepo;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -43,9 +46,8 @@ public class CatalogService {
      * @return returns all catalogs from database
      */
     public List<CatalogDTO> getAllCatalogs() {
-        List<CatalogDTO> catalogs = new ArrayList<>();
         List<Catalog> catalogsFromDB = (List<Catalog>) catalogRepo.findAll();
-        return convertCatalogToCatalogDTO(catalogsFromDB);
+        return convertCatalogToAdminCatalogDTO(catalogsFromDB);
     }
 
     /**
@@ -59,14 +61,18 @@ public class CatalogService {
 
     /**
      * Maps CatalogDTO to Catalog and calls addChild method
-     * @param parentCatalogUUID UUID of parent catalog
      * @param newCatalogDTO new catalog
      */
-    public void addNewCatalog(UUID parentCatalogUUID, CatalogDTO newCatalogDTO) {
-        Catalog parent = catalogRepo.findById(parentCatalogUUID).orElseThrow(
-                () -> new IllegalArgumentException("There is no catalog with UUID: " + parentCatalogUUID)
+    public void addNewCatalog(CatalogDTO newCatalogDTO) {
+        if (catalogRepo.findByCatalogName(newCatalogDTO.getCatalogName()).isPresent()) {
+            throw new IllegalArgumentException("You cannot create catalog with name " + newCatalogDTO.getCatalogName() + " . Catalog name must be unique.");
+        }
+        Catalog parent = catalogRepo.findByCatalogName(newCatalogDTO.getParentCatalogName()).orElseThrow(
+                () -> new IllegalArgumentException("There is no catalog with name: " + newCatalogDTO.getParentCatalogName())
         );
         Catalog newCatalog = new Catalog(newCatalogDTO.getCatalogName(), newCatalogDTO.getCatalogPicture(), RemovalStatus.ACTIVE);
+        catalogRepo.save(newCatalog);
+        newCatalog = catalogRepo.findByCatalogName(newCatalog.getCatalogName()).orElseThrow();
         addChild(parent, newCatalog);
     }
 
@@ -74,6 +80,7 @@ public class CatalogService {
      * Modifies the catalog in database
      * @param catalogDTO
      */
+    /*
     public void modifyCatalog(CatalogDTO catalogDTO) {
         Catalog catalog = catalogRepo.findById(catalogDTO.getCatalogUUID()).orElseThrow(
                 () -> new IllegalArgumentException("There is no catalog with UUID: " + catalogDTO.getCatalogUUID())
@@ -83,6 +90,9 @@ public class CatalogService {
         catalog.setPopularity(catalogDTO.getPopularity());
         catalogRepo.save(catalog);
     }
+
+     */
+
 
     /**
      * Sets to the given catalog RemovalStatus.REMOVED. Then performs cascade removal of all its children and products.
@@ -182,8 +192,28 @@ public class CatalogService {
             result.add(new CatalogDTO(
                     catalog.getUUID(),
                     catalog.getCatalogName(),
+                    catalog.getImgSource()
+            ));
+        }
+        return result;
+    }
+
+    /**
+     * Maps list of Catalog to list of AdminCatalogDTO
+     * @param catalogs list of Catalog
+     * @return List<AdminCatalogDTO>
+     */
+    public List<CatalogDTO> convertCatalogToAdminCatalogDTO(List<Catalog> catalogs) {
+        List<CatalogDTO> result = new ArrayList<>();
+        for (Catalog catalog : catalogs) {
+            result.add(new CatalogDTO(
+                    catalog.getUUID(),
+                    catalog.getCatalogName(),
                     catalog.getImgSource(),
-                    catalog.getPopularity()
+                    catalog.getPopularity(),
+                    catalog.getParent() == null ? "" : catalog.getParent().getCatalogName(),
+                    !catalog.getRemovalStatus().equals(RemovalStatus.ACTIVE),
+                    catalog.getRemovalStatus()
             ));
         }
         return result;

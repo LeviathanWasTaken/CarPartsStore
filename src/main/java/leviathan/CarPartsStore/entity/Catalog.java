@@ -2,14 +2,12 @@ package leviathan.CarPartsStore.entity;
 
 import jakarta.persistence.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import leviathan.CarPartsStore.domain.RemovalStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "catalogs")
@@ -37,7 +35,7 @@ public class Catalog {
     private int right;
 
     @OneToMany(mappedBy = "catalog")
-    private List<Product> products;
+    private List<Product> products = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "parent_uuid")
@@ -53,4 +51,8 @@ public class Catalog {
         popularity = 0;
     }
 
+    @Override
+    public int hashCode() {
+        return catalogName.hashCode();
+    }
 }
