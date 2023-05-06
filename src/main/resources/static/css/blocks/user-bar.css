@@ -34,8 +34,15 @@
     border-radius: 10px;
     border-color: var(--catalog-border-color);
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+}
+
+.user-info {
+    max-width: 1000px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
 }
 
 .user-bar-container {
@@ -127,7 +134,7 @@
 }
 
 @media screen and (max-width: 500px) {
-    .user-bar {
+    .user-info {
         flex-direction: column;
         margin-left: 5px;
         margin-right: 5px;

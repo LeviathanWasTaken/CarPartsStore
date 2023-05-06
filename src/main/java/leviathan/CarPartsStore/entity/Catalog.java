@@ -1,13 +1,11 @@
 package leviathan.CarPartsStore.entity;
 
 import jakarta.persistence.*;
-
-import java.util.*;
-
 import leviathan.CarPartsStore.domain.RemovalStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+
+import java.util.*;
 
 @Entity
 @Table(name = "catalogs")
@@ -54,5 +52,10 @@ public class Catalog {
     @Override
     public int hashCode() {
         return catalogName.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "{catalogName: "+catalogName+", left: "+left+", right: "+right+"}";
     }
 }

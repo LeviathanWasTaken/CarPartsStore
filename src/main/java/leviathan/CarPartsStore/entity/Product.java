@@ -1,23 +1,21 @@
 package leviathan.CarPartsStore.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-import java.util.List;
-import java.util.UUID;
-
+import jakarta.persistence.*;
 import leviathan.CarPartsStore.domain.RemovalStatus;
+import leviathan.CarPartsStore.services.MapConverter;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 @Entity
 @Table(name = "products")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Product {
 
     @Id
@@ -25,10 +23,11 @@ public class Product {
     private UUID productUUID;
     @ManyToOne
     private Catalog catalog;
-    @Column(unique = true)
-    private String uniqueTag;
-    @OneToOne(mappedBy = "product")
-    private ProductInfo productInfo;
+    @Convert(converter = MapConverter.class)
+    private Map<String, Object> details;
+    private String productName;
+    private String imgSource;
+    private int priceInPennies;
     @OneToMany(mappedBy = "product")
     private List<CartItem> cartItems;
     @Column(name = "status")
@@ -36,10 +35,7 @@ public class Product {
     @OneToMany(mappedBy = "product")
     private List<Review> reviews;
 
-    public Product() {
-    }
-
-    public Product(Catalog catalog, String uniqueTag) {
+    public Product(Catalog catalog) {
         this.catalog = catalog;
         removalStatus = RemovalStatus.ACTIVE;
     }

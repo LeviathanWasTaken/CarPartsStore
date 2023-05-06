@@ -1,8 +1,8 @@
 package leviathan.CarPartsStore.services;
 
+import leviathan.CarPartsStore.domain.RemovalStatus;
 import leviathan.CarPartsStore.entity.Cart;
 import leviathan.CarPartsStore.entity.CartItem;
-import leviathan.CarPartsStore.domain.RemovalStatus;
 import leviathan.CarPartsStore.repos.CartRepo;
 import org.springframework.stereotype.Service;
 
@@ -131,7 +131,7 @@ public class CartService {
         int totalPrice = 0;
         for (CartItem cartItem : cart.getCartItems().stream().filter(
               cartItem -> cartItem.getProduct().getRemovalStatus().equals(RemovalStatus.ACTIVE)).toList()) {
-            totalPrice += cartItem.getProduct().getProductInfo().getPriceInPennies() * cartItem.getQuantity();
+            totalPrice += cartItem.getProduct().getPriceInPennies() * cartItem.getQuantity();
         }
         return totalPrice;
     }

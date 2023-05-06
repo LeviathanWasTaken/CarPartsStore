@@ -1,8 +1,5 @@
 package leviathan.CarPartsStore.services;
 
-import java.util.Map;
-import java.util.UUID;
-
 import leviathan.CarPartsStore.domain.UserDTO;
 import leviathan.CarPartsStore.entity.Roles;
 import leviathan.CarPartsStore.entity.User;
@@ -14,6 +11,9 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class AuthorizationService {

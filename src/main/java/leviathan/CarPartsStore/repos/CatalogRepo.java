@@ -1,14 +1,12 @@
 package leviathan.CarPartsStore.repos;
 
+import leviathan.CarPartsStore.domain.RemovalStatus;
+import leviathan.CarPartsStore.entity.Catalog;
+import org.springframework.data.repository.CrudRepository;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-import leviathan.CarPartsStore.domain.RemovalStatus;
-import leviathan.CarPartsStore.entity.Catalog;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.repository.CrudRepository;
 
 public interface CatalogRepo extends CrudRepository<Catalog, UUID> {
 
@@ -20,4 +18,6 @@ public interface CatalogRepo extends CrudRepository<Catalog, UUID> {
     List<Catalog> findAllByLeftGreaterThanAndRightLessThan(int left, int right);
 
     List<Catalog> findAllByParentAndRemovalStatus(Catalog parent, RemovalStatus removalStatus);
+
+    List<Catalog> findAllByRightGreaterThanEqual(int right);
 }

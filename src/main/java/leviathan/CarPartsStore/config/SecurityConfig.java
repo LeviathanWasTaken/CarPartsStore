@@ -16,7 +16,7 @@ public class SecurityConfig {
         httpSecurity
               .csrf().disable()
               .authorizeHttpRequests()
-              .requestMatchers("/cart**", "/admin**").authenticated()
+              .requestMatchers("/cart**", "/admin/**").authenticated()
               .anyRequest().permitAll()
               .and()
               .logout()

@@ -1,10 +1,5 @@
 package leviathan.CarPartsStore.services;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
-
 import jakarta.transaction.Transactional;
 import leviathan.CarPartsStore.domain.CartDTO;
 import leviathan.CarPartsStore.domain.UserDTO;
@@ -14,9 +9,12 @@ import leviathan.CarPartsStore.entity.User;
 import leviathan.CarPartsStore.repos.CartItemRepo;
 import leviathan.CarPartsStore.repos.CartRepo;
 import leviathan.CarPartsStore.repos.UserRepo;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Collections;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class UserService {

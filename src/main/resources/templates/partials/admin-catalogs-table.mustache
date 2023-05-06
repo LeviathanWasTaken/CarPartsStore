@@ -1,0 +1,54 @@
+<div class="admin-catalogs-table-container">
+    <div class="admin-catalogs-tables">
+        <h2>Catalogs</h2>
+        <table class="add-catalog-table">
+            <tr>
+                <th></th>
+                <th>Catalog Name</th>
+                <th>Catalog Picture</th>
+                <th>Parent catalog name</th>
+                <th></th>
+            </tr>
+            <tr>
+                <form action="/admin/catalog" method="post">
+                    <td>Add catalog: </td>
+                    <td><input type="text" name="catalogName" required></td>
+                    <td><input type="text" name="catalogPicture" required></td>
+                    <td><input type="text" name="parentCatalogName" required></td>
+                    <td><button type="submit">Add</button></td>
+                </form>
+            </tr>
+        </table>
+        <table class="edit-catalogs-table">
+            <tr>
+                <th>UUID</th>
+                <th>Status</th>
+                <th>Catalog Name</th>
+                <th>Catalog picture</th>
+                <th>Popularity</th>
+                <th>Parent catalog name</th>
+                <th></th>
+                <th></th>
+            </tr>
+            {{#catalogs}}
+                <tr>
+                    <form action="/admin/catalog/edit" method="post">
+                        <td><input type="text" name="catalogUUID" value="{{catalogUUID}}" disabled></td>
+                        <td><input type="text" name="Status" value="{{removalStatus}}" disabled></td>
+                        <td><input type="text" name="catalogName" value="{{catalogName}}" required></td>
+                        <td><input type="text" name="catalogPicture" value="{{catalogPicture}}" required></td>
+                        <td><input type="number" name="popularity" value="{{popularity}}" required min="0"></td>
+                        <td><input type="text" name="parentCatalogName" value="{{parentCatalogName}}" disabled></td>
+                        <td><button type="submit">Set</button></td>
+                        {{#isRemoved}}
+                            <td><a href="/admin/catalog/{{catalogUUID}}/restore">Restore</a></td>
+                        {{/isRemoved}}
+                        {{^isRemoved}}
+                            <td><a href="/admin/catalog/{{catalogUUID}}/remove">Remove</a></td>
+                        {{/isRemoved}}
+                    </form>
+                </tr>
+            {{/catalogs}}
+        </table>
+    </div>
+</div>

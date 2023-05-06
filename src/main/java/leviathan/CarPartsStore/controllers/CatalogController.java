@@ -1,32 +1,32 @@
 package leviathan.CarPartsStore.controllers;
 
-import java.util.UUID;
+import leviathan.CarPartsStore.domain.UserDTO;
 import leviathan.CarPartsStore.services.AuthorizationService;
-import leviathan.CarPartsStore.services.CartService;
 import leviathan.CarPartsStore.services.CatalogService;
+import leviathan.CarPartsStore.services.ProductsService;
 import leviathan.CarPartsStore.services.UserService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 public class CatalogController {
 
     private final AuthorizationService authorizationService;
-    private final CartService cartService;
     private final CatalogService catalogService;
     private final UserService userService;
+    private final ProductsService productsService;
 
     public CatalogController(AuthorizationService authorizationService,
-                             CartService cartService,
                              CatalogService catalogService,
-                             UserService userService) {
+                             UserService userService, ProductsService productsService) {
         this.authorizationService = authorizationService;
-        this.cartService = cartService;
         this.catalogService = catalogService;
         this.userService = userService;
+        this.productsService = productsService;
     }
 /*
     @GetMapping("/catalog/{catalogTag}")
@@ -41,4 +41,23 @@ public class CatalogController {
     }
 
  */
+    @GetMapping("/catalog/{catalogName}")
+    public ModelAndView catalog(@PathVariable String catalogName,
+                                @RequestParam(required = false, defaultValue = "0") int page,
+                                OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+        ModelAndView mav = new ModelAndView();
+        mav.setViewName("catalog");
+        mav.addObject("top5Catalogs", catalogService.getTop5ActiveByPopularity());
+        boolean isAuthenticated = authorizationService.isUserAuthenticated(oAuth2AuthenticationToken);
+        mav.addObject("isAuthenticated", isAuthenticated);
+        if (isAuthenticated) {
+            UserDTO user = authorizationService.authorize(oAuth2AuthenticationToken);
+            mav.addObject("user", user);
+            mav.addObject("cart", userService.getUserCartByUserUUID(user.getUserUUID()));
+        }
+        mav.addObject("childrenCatalogs", catalogService.getActiveChildCatalogs(catalogName));
+        mav.addObject("products", productsService.getPageOfActiveProductsByCatalogUUID(
+                catalogService.getCatalogByName(catalogName).getCatalogUUID(), page));
+        return mav;
+    }
 }

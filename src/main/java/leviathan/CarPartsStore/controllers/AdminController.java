@@ -8,12 +8,13 @@ import leviathan.CarPartsStore.services.CatalogService;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Controller
 public class AdminController {
@@ -255,21 +256,96 @@ public class AdminController {
 
     @PostMapping("/admin/catalog")
     public String addCatalog(OAuth2AuthenticationToken oAuth2AuthenticationToken,
-                             @RequestParam String catalogName,
-                             @RequestParam String catalogPicture,
-                             @RequestParam String parentCatalogName) {
+                             CatalogDTO newCatalog,
+                             HttpServletResponse httpServletResponse) throws IOException {
         String message;
         String messageType;
         UserDTO user = authorizationService.authorize(oAuth2AuthenticationToken);
         if(authorizationService.isUserAdmin(user.getUserUUID())) {
-            CatalogDTO newCatalog = new CatalogDTO(catalogName, catalogPicture, parentCatalogName);
-            catalogService.addNewCatalog(newCatalog);
-            message = "Catalog " + catalogName + " successfully created.";
-            messageType = "success";
+            try {
+                catalogService.addNewCatalog(newCatalog);
+            } catch (IllegalArgumentException e) {
+                return "redirect:/admin?message=" + e.getMessage() + "&messageType=error";
+            } finally {
+                message = "Catalog " + newCatalog.getCatalogName() + " successfully created.";
+                messageType = "success";
+            }
         }
         else {
-            message = "Unauthorized request";
-            messageType = "error";
+            httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return "redirect:/admin";
+        }
+        return "redirect:/admin?message=" + message + "&messageType=" + messageType;
+    }
+
+    @PostMapping("/admin/catalog/edit")
+    public String editCatalog(OAuth2AuthenticationToken oAuth2AuthenticationToken,
+                              CatalogDTO catalog,
+                              HttpServletResponse httpServletResponse) throws IOException {
+        String message;
+        String messageType;
+        UserDTO user = authorizationService.authorize(oAuth2AuthenticationToken);
+        if(authorizationService.isUserAdmin(user.getUserUUID())) {
+            try {
+                catalogService.modifyCatalog(catalog);
+            } catch (IllegalArgumentException e) {
+                return "redirect:/admin?message=" + e.getMessage() + "&messageType=error";
+            } finally {
+                message = "Catalog " + catalog.getCatalogName() + " successfully modified";
+                messageType = "success";
+            }
+        }
+        else {
+            httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return "redirect:/admin";
+        }
+        return "redirect:/admin?message=" + message + "&messageType=" + messageType;
+    }
+
+    @GetMapping("/admin/catalog/{catalogUUID}/remove")
+    public String removeCatalog(@PathVariable UUID catalogUUID,
+                                OAuth2AuthenticationToken oAuth2AuthenticationToken,
+                                HttpServletResponse httpServletResponse) throws IOException {
+        String message;
+        String messageType;
+        UserDTO user = authorizationService.authorize(oAuth2AuthenticationToken);
+        if(authorizationService.isUserAdmin(user.getUserUUID())) {
+            try {
+                catalogService.removeCatalog(catalogUUID);
+            } catch (IllegalArgumentException e) {
+                return "redirect:/admin?message=" + e.getMessage() + "&messageType=error";
+            } finally {
+                message = "Catalog successfully removed";
+                messageType = "success";
+            }
+        }
+        else {
+            httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return "redirect:/admin";
+        }
+        return "redirect:/admin?message=" + message + "&messageType=" + messageType;
+    }
+
+    @GetMapping("/admin/catalog/{catalogUUID}/restore")
+    public String restoreCatalog(@PathVariable UUID catalogUUID,
+                                OAuth2AuthenticationToken oAuth2AuthenticationToken,
+                                HttpServletResponse httpServletResponse) throws IOException {
+        String message;
+        String messageType;
+        UserDTO user = authorizationService.authorize(oAuth2AuthenticationToken);
+        if(authorizationService.isUserAdmin(user.getUserUUID())) {
+            try {
+                catalogService.restoreCatalog(catalogUUID);
+            } catch (IllegalArgumentException e) {
+                return "redirect:/admin?message=" + e.getMessage() + "&messageType=error";
+            } finally {
+                message = "Catalog successfully restored";
+                messageType = "success";
+            }
+        }
+        else {
+            httpServletResponse.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return "redirect:/admin";
         }
         return "redirect:/admin?message=" + message + "&messageType=" + messageType;
     }

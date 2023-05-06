@@ -1,30 +1,27 @@
 package leviathan.CarPartsStore.services;
 
-import jakarta.transaction.Transactional;
-import java.util.Map;
-import java.util.UUID;
-import leviathan.CarPartsStore.entity.Catalog;
-import leviathan.CarPartsStore.entity.Product;
-import leviathan.CarPartsStore.entity.ProductInfo;
+import leviathan.CarPartsStore.domain.ProductDTO;
 import leviathan.CarPartsStore.domain.RemovalStatus;
-import leviathan.CarPartsStore.repos.ProductInfoRepo;
+import leviathan.CarPartsStore.entity.Product;
 import leviathan.CarPartsStore.repos.ProductRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 @Service
 public class ProductsService {
 
     private final ProductRepo productRepo;
-    private final ProductInfoRepo productInfoRepo;
 
-    public ProductsService(ProductRepo productRepo, ProductInfoRepo productInfoRepo) {
+    public ProductsService(ProductRepo productRepo) {
         this.productRepo = productRepo;
-        this.productInfoRepo = productInfoRepo;
     }
-
+    /*
     public Product getProduct(String uniqueTag) {
         return productRepo.findByUniqueTag(uniqueTag).orElse(null);
     }
@@ -33,9 +30,7 @@ public class ProductsService {
         return productRepo.findById(productUUID).orElse(null);
     }
 
-    public Iterable<Product> getAllProducts() {
-        return productRepo.findAll();
-    }
+
 
     public Page<Product> getActiveProductsByCatalogUUIDPaginated(UUID catalogUUID, int pageNumber, int pageSize) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -87,5 +82,42 @@ public class ProductsService {
     public void removeProductDetails(ProductInfo productInfo, String key) {
         productInfo.getDetails().remove(key);
         productInfoRepo.save(productInfo);
+    }
+
+     */
+    private ProductDTO productToProductDTO(Product product) {
+        ProductDTO productDTO = new ProductDTO();
+        productDTO.setProductUUID(product.getProductUUID());
+        productDTO.setProductName(product.getProductName());
+        productDTO.setProductPicture(product.getImgSource());
+        productDTO.setProductPriceInPennies(product.getPriceInPennies());
+        productDTO.setProductDetails(product.getDetails());
+        productDTO.setProductRemovalStatus(product.getRemovalStatus());
+        return productDTO;
+    }
+
+    public List<ProductDTO> getAllProducts() {
+        Iterable<Product> productsFromDB = productRepo.findAll();
+        List<ProductDTO> products = new ArrayList<>();
+        for (Product product : productsFromDB) {
+            products.add(productToProductDTO(product));
+        }
+        return products;
+    }
+
+    public ProductDTO getProductByUUID(UUID productUUID) throws IllegalArgumentException {
+        return productToProductDTO(productRepo.findById(productUUID).orElseThrow(
+                () -> new IllegalArgumentException("There is no product with UUID: " + productUUID)
+        ));
+    }
+
+    public List<ProductDTO> getPageOfActiveProductsByCatalogUUID(UUID catalogUUID, int pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber, 2);
+        Page<Product> productsFromDB = productRepo.findProductsByCatalogUUIDAndRemovalStatus(catalogUUID, RemovalStatus.ACTIVE, pageable);
+        List<ProductDTO> products = new ArrayList<>();
+        for (Product product : productsFromDB) {
+            products.add(productToProductDTO(product));
+        }
+        return products;
     }
 }
