@@ -10,9 +10,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.UUID;
+
 @Controller
 public class MainController {
-
+    private final String rootCatalogUUID = "2ba366e2-3f87-4f52-8931-76918748557d";
     private final CatalogService catalogService;
     private final AuthorizationService authorizationService;
     private final CartService cartService;
@@ -34,7 +36,8 @@ public class MainController {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("home");
         mav.addObject("top5Catalogs", catalogService.getTop5ActiveByPopularity());
-        mav.addObject("catalogsList", catalogService.getActiveChildCatalogs("ROOT"));
+        mav.addObject("rootCatalog", catalogService.getCatalogByUUID(UUID.fromString(rootCatalogUUID)));
+        mav.addObject("catalogsList", catalogService.getActiveChildCatalogs(UUID.fromString(rootCatalogUUID)));
         boolean isAuthenticated = authorizationService.isUserAuthenticated(oAuth2AuthenticationToken);
         mav.addObject("isAuthenticated", isAuthenticated);
         if (isAuthenticated) {

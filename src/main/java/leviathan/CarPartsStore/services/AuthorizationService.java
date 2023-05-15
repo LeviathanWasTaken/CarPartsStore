@@ -28,7 +28,7 @@ public class AuthorizationService {
         this.userRepo = userRepo;
     }
 
-    public UserDTO authorize(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+    public UserDTO authorize(OAuth2AuthenticationToken oAuth2AuthenticationToken) throws ClientAuthorizationException {
         String registrationId = oAuth2AuthenticationToken.getAuthorizedClientRegistrationId();
         ClientRegistration clientRegistration = clientRegistrationRepository.findByRegistrationId(registrationId);
         if (clientRegistration != null) {

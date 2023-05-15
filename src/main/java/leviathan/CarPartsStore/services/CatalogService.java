@@ -9,13 +9,11 @@ import leviathan.CarPartsStore.repos.CatalogRepo;
 import leviathan.CarPartsStore.repos.ProductRepo;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class CatalogService {
-
+    private final String rootCatalogUUID = "2ba366e2-3f87-4f52-8931-76918748557d";
     private final CatalogRepo catalogRepo;
     private final ProductRepo productRepo;
 
@@ -27,12 +25,12 @@ public class CatalogService {
 
     /**
      *
-     * @param parentName name of the parent
+     * @param parentUUID name of the parent
      * @return returns children that have direct connection to the given parent
      */
-    public List<CatalogDTO> getActiveChildCatalogs(String parentName) throws IllegalArgumentException {
-        Catalog parent = catalogRepo.findByCatalogName(parentName).orElseThrow(
-                () -> new IllegalArgumentException("There is no catalog with name: " + parentName)
+    public List<CatalogDTO> getActiveChildCatalogs(UUID parentUUID) throws IllegalArgumentException {
+        Catalog parent = catalogRepo.findById(parentUUID).orElseThrow(
+                () -> new IllegalArgumentException("There is no catalog with UUID: " + parentUUID)
         );
         List<Catalog> children = catalogRepo.findAllByParentAndRemovalStatus(parent, RemovalStatus.ACTIVE);
         List<CatalogDTO> catalogs = new ArrayList<>();
@@ -67,14 +65,38 @@ public class CatalogService {
      * @return List<CatalogDTO>
      */
     public List<CatalogDTO> getTop5ActiveByPopularity() {
-        List<Catalog> catalogsFromDB = catalogRepo.findFirst5ByRemovalStatusAndCatalogNameIsNotOrderByPopularityDesc(
+        List<Catalog> catalogsFromDB = catalogRepo.findFirst5ByRemovalStatusAndCatalogUUIDIsNotOrderByPopularityDesc(
                 RemovalStatus.ACTIVE,
-                "ROOT");
+                UUID.fromString(rootCatalogUUID));
         List<CatalogDTO> catalogs = new ArrayList<>();
         for (Catalog catalog : catalogsFromDB) {
             catalogs.add(convertCatalogToCatalogDTO(catalog));
         }
         return catalogs;
+    }
+
+    public CatalogDTO getCatalogByUUID(UUID catalogUUID) throws IllegalArgumentException {
+        Catalog catalog = catalogRepo.findById(catalogUUID).orElseThrow(
+                () -> new IllegalArgumentException("There is no catalog with UUID: " + catalogUUID)
+        );
+        return new CatalogDTO(catalog.getCatalogUUID(), catalog.getCatalogName().equals("ROOT")? "Catalog" : catalog.getCatalogName());
+    }
+
+    public List<CatalogDTO> getCatalogPath(UUID catalogUUID) throws IllegalArgumentException {
+        List<CatalogDTO> result = new LinkedList<>();
+        Catalog catalogFromDB = catalogRepo.findById(catalogUUID).orElseThrow(
+                () -> new IllegalArgumentException("There is no catalog with UUID: " + catalogUUID)
+        );
+        List<Catalog> ignoreList = catalogRepo.findAllByRightLessThan(catalogFromDB.getLeft());
+        List<Catalog> catalogsFromDB = catalogRepo.findAllByLeftLessThan(catalogFromDB.getLeft());
+        Comparator<Catalog> comparator = Comparator.comparing(Catalog::getLeft);
+        catalogsFromDB.sort(comparator);
+        for (Catalog catalog : catalogsFromDB) {
+            if (!ignoreList.contains(catalog)) {
+                result.add(new CatalogDTO(catalog.getCatalogUUID(), catalog.getCatalogName().equals("ROOT")? "Catalog" : catalog.getCatalogName()));
+            }
+        }
+        return result;
     }
 
     /**
@@ -102,7 +124,7 @@ public class CatalogService {
      * @param catalogDTO
      */
     public void modifyCatalog(CatalogDTO catalogDTO) throws IllegalArgumentException {
-        if (catalogDTO.getCatalogName().equals("ROOT")) {
+        if (catalogDTO.getCatalogUUID().equals(UUID.fromString(rootCatalogUUID))) {
             throw new IllegalArgumentException("You cannot edit ROOT catalog!");
         }
         Catalog catalog = catalogRepo.findByCatalogName(catalogDTO.getCatalogName()).orElseThrow(
@@ -214,9 +236,10 @@ public class CatalogService {
      */
     public CatalogDTO convertCatalogToCatalogDTO(Catalog catalog) {
         return new CatalogDTO(
-                catalog.getUUID(),
+                catalog.getCatalogUUID(),
                 catalog.getCatalogName(),
-                catalog.getImgSource()
+                catalog.getImgSource(),
+                !catalog.getChildren().isEmpty()
         );
     }
 
@@ -227,13 +250,13 @@ public class CatalogService {
      */
     public CatalogDTO convertCatalogToAdminCatalogDTO(Catalog catalog) {
         return new CatalogDTO(
-                catalog.getUUID(),
+                catalog.getCatalogUUID(),
                 catalog.getCatalogName(),
                 catalog.getImgSource(),
                 catalog.getPopularity(),
                 catalog.getParent() == null ? "" : catalog.getParent().getCatalogName(),
-                catalog.getRemovalStatus().equals(RemovalStatus.REMOVED),
-                catalog.getRemovalStatus()
+                catalog.getRemovalStatus(),
+                catalog.getRemovalStatus().equals(RemovalStatus.REMOVED)
         );
     }
 
@@ -249,6 +272,9 @@ public class CatalogService {
         int parentRight = parent.getRight();
         List<Catalog> catalogs = catalogRepo.findAllByRightGreaterThanEqual(parentRight);
         for (Catalog catalog : catalogs) {
+            if (catalog.getLeft() >= parentRight) {
+                catalog.setLeft(catalog.getLeft()+2);
+            }
             catalog.setRight(catalog.getRight()+2);
             catalogRepo.save(catalog);
         }

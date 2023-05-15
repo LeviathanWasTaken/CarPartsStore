@@ -1,49 +1,54 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <link rel="stylesheet" href="/static/css/main.css">
-        <link rel="icon" href="/static/img/favicon.svg" type="image/x-icon">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Car Parts Store - {{catalogName}}</title>
-    </head>
-    <body>
-    {{>partials/header}}
-    {{>partials/user-bar}}
-
-
-
-
-    <div class="product-list">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/blocks/catalog.css">
+    <link rel="stylesheet" href="/static/css/blocks/products-list.css">
+    <link rel="icon" href="/static/img/favicon.svg" type="image/x-icon">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Parts Store - {{currentCatalog.catalogName}}</title>
+</head>
+<body>
+{{>partials/header}}
+{{>partials/user-bar}}
+<div class="catalog">
+    {{^isCatalogPathEmpty}}
+        <div class="catalog-path">
+            {{#catalogPath}}
+                <a class="catalog-link" href="/catalog/{{catalogUUID}}">{{catalogName}}</a>
+                <span class="catalog-path-delimiter"> > </span>
+            {{/catalogPath}}
+            <span class="catalog-path-current-catalog">{{currentCatalog.catalogName}}</span>
+        </div>
+    {{/isCatalogPathEmpty}}
+    <div class="catalog-title">
+        <p>{{currentCatalog.catalogName}}</p>
+    </div>
+    {{^isChildrenCatalogsEmpty}}
+        <div class="catalog-list">
+            {{#childrenCatalogs}}
+                {{>partials/catalog-tile}}
+            {{/childrenCatalogs}}
+        </div>
+    {{/isChildrenCatalogsEmpty}}
+</div>
+{{#isProductsEmpty}}
+    <div class="products">
+        <h1 class="products-title">Products list ({{amountOfProducts}} items found)</h1>
+        <div class="sorting-bar">
+            <a class="sorting-type-btn" href="/catalog/{{currentCatalog.catalogUUID}}?s={{searchRequest}}&sort=PRICE_ASC">cheap first</a>
+            <a class="sorting-type-btn" href="/catalog/{{currentCatalog.catalogUUID}}?s={{searchRequest}}&sort=PRICE_DESC">expensive first</a>
+            <a class="sorting-type-btn" href="/catalog/{{currentCatalog.catalogUUID}}?s={{searchRequest}}&sort=POPULARITY_ASC">popular first</a>
+            <a class="sorting-type-btn" href="/catalog/{{currentCatalog.catalogUUID}}?s={{searchRequest}}&sort=POPULARITY_DESC">unpopular first</a>
+        </div>
         {{#products}}
-            <div>
-                {{#product}}
-                    <form method="post" action="/cart/add-to-cart?p={{UUID}}">
-                    {{#productInfo}}
-                        <a href="/catalog/{{catalogUUID}}/product/{{UUID}}"><h2>{{productName}}</h2></a>
-                        <img src="{{imgSource}}" width="100px" height="100px" alt="{{productName}}">
-                        <p>Price: ${{priceInPennies}}</p>
-                        <label for="quantity">Quantity:</label>
-                        <input type="number" id="quantity" name="quantity" min="1" max="10" value="1">
-                        <input type="hidden" id="price" name="price" value="{{priceInPennies}}">
-                    {{/productInfo}}
-                    <input type="hidden" name="uuid" value="{{UUID}}">
-                    {{#isUserAuthorized}}
-                        {{#isInCart}}
-                            <a href="/cart"><button type="button">Add to Cart</button></a>
-                        {{/isInCart}}
-                        {{^isInCart}}
-                            <button type="submit">Add to Cart</button>
-                        {{/isInCart}}
-                    {{/isUserAuthorized}}
-                    {{^isUserAuthorized}}
-                        <button type="submit" disabled><a href="/login">Log in</a> to add product in cart</button>
-                    {{/isUserAuthorized}}
-                    </form>
-                {{/product}}
+            <div class="products-list">
+                {{>partials/product-tile}}
             </div>
         {{/products}}
     </div>
-    {{>partials/footer}}
-    </body>
+{{/isProductsEmpty}}
+{{>partials/footer}}
+</body>
 </html>

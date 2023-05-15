@@ -15,7 +15,7 @@ public class Catalog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID UUID;
+    private UUID catalogUUID;
 
     @Column(unique = true)
     private String catalogName;
@@ -51,7 +51,7 @@ public class Catalog {
 
     @Override
     public int hashCode() {
-        return catalogName.hashCode();
+        return catalogUUID.hashCode();
     }
 
     @Override

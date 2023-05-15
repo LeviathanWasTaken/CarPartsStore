@@ -12,12 +12,16 @@ public interface CatalogRepo extends CrudRepository<Catalog, UUID> {
 
     Optional<Catalog> findByCatalogName(String catalogName);
 
-    List<Catalog> findFirst5ByRemovalStatusAndCatalogNameIsNotOrderByPopularityDesc(
-            RemovalStatus removalStatus, String rootCatalogName);
+    List<Catalog> findFirst5ByRemovalStatusAndCatalogUUIDIsNotOrderByPopularityDesc(
+            RemovalStatus removalStatus, UUID catalogUUID);
 
     List<Catalog> findAllByLeftGreaterThanAndRightLessThan(int left, int right);
 
     List<Catalog> findAllByParentAndRemovalStatus(Catalog parent, RemovalStatus removalStatus);
 
     List<Catalog> findAllByRightGreaterThanEqual(int right);
+
+    List<Catalog> findAllByRightLessThan(int right);
+
+    List<Catalog> findAllByLeftLessThan(int left);
 }

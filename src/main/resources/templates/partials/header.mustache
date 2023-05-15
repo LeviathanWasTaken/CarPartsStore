@@ -10,9 +10,9 @@
                 <h1>CAR PARTS STORE</h1>
             </a>
             <div class="header-main">
-                <form action="/catalog">
+                <form action="/catalog/{{rootCatalog.catalogUUID}}">
                     <div class="input-row">
-                        <input type="search" id="search" name="search" autocomplete="off" placeholder="Enter search terms...">
+                        <input type="search" id="search" name="s" autocomplete="off" required placeholder="Enter search terms...">
                         <button type="submit" class="search-btn"><img width="30px" height="30px" src="/static/img/search-icon.svg" alt=""></button>
                     </div>
                 </form>
@@ -20,7 +20,7 @@
             <nav>
                 <div class="catalogs-top5">
                     {{#top5Catalogs}}
-                        <a class="catalogs-top5-tile" href="/catalog/{{catalogName}}">
+                        <a class="catalogs-top5-tile" href="/catalog/{{catalogUUID}}">
                             <img class="catalogs-top5-icon" src="{{catalogPicture}}" alt="">
                             <span>{{catalogName}}</span>
                         </a>

@@ -2,7 +2,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="/static/css/main.css">
-    <link rel="stylesheet" href="/static/css/blocks/home-catalog-list.css">
+    <link rel="stylesheet" href="/static/css/blocks/catalog.css">
     <link rel="shortcut icon" href="/static/img/favicon.svg" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Parts Store</title>
@@ -16,12 +16,7 @@
     </div>
     <div class="catalog-list">
         {{#catalogsList}}
-            <div class="catalog-tile">
-                <a class="catalog-name" href="/catalog/{{catalogUUID}}">
-                    <img class="catalog-tile-img" src="{{catalogPicture}}" alt="img">
-                    <p class="catalog-name-p">{{catalogName}}</p>
-                </a>
-            </div>
+            {{>partials/catalog-tile}}
         {{/catalogsList}}
     </div>
 </div>

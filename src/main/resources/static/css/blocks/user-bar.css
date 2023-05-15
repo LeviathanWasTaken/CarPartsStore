@@ -78,7 +78,7 @@
 
 .username {
     font-weight: bold;
-    color: var(--discount-secondsry);
+    color: var(--discount-secondary);
     font-size: 20px;
 }
 
@@ -130,7 +130,7 @@
 .price {
     font-size: 25px;
     font-weight: bold;
-    color: var(--discount-secondsry);
+    color: var(--discount-secondary);
 }
 
 @media screen and (max-width: 500px) {

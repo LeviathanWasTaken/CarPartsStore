@@ -94,7 +94,7 @@ public class UserService {
         return userRepo.findById(userUUID);
     }
 
-    public CartDTO getUserCartByUserUUID(UUID userUUID) {
+    public CartDTO getUserCartByUserUUID(UUID userUUID) throws IllegalArgumentException {
         User user = userRepo.findById(userUUID).orElseThrow(
                 () -> new IllegalArgumentException("There is no user with UUID: " + userUUID)
         );

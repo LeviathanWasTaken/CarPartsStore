@@ -12,4 +12,73 @@
         <div class="message-{{messageType}}">{{message}}</div>
     {{/message}}
     {{>partials/admin-catalogs-table}}
+    <div class="admin-products-table">
+        <h2>Products</h2>
+        <table>
+            <tr>
+                <th></th>
+                <th>Catalog Name</th>
+                <th>Product Name</th>
+                <th>Image Source</th>
+                <th>Price (in Pennies)</th>
+                <th></th>
+            </tr>
+            <tr>
+                <form action="/admin/product" method="post">
+                    <td>Add product</td>
+                    <td>
+                        <select name="catalogName" required>
+                            <option value="">None</option>
+                            {{#catalogs}}
+                                <option value="{{catalogName}}">{{catalogName}}</option>
+                            {{/catalogs}}
+                        </select>
+                    </td>
+                    <td><input type="text" name="productName" required></td>
+                    <td><input type="text" name="previewPicture" required></td>
+                    <td><input type="number" name="productPriceInPennies" required min="0"></td>
+                    <td><button type="submit">Add</button></td>
+                </form>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <th>UUID</th>
+                <th>Catalog Name</th>
+                <th>Product Name</th>
+                <th>Image Source</th>
+                <th>Price (in Pennies)</th>
+                <th>Status</th>
+                <th></th>
+            </tr>
+            {{#products}}
+                <tr>
+                    <form action="/admin/edit/modify-product/{{#product}}{{UUID}}{{/product}}" method="post">
+                        <td><input type="text" name="UUID" value="{{#product}}{{UUID}}{{/product}}" disabled></td>
+                        <td>
+                            <select name="catalogUUID" required>
+                                <option value="{{#product}}{{#catalog}}{{catalogUUID}}{{/catalog}}{{/product}}" selected>{{#product}}{{#catalog}}{{name}}{{/catalog}}{{/product}}</option>
+                                {{#catalogs}}
+                                    <option value="{{catalogUUID}}">{{name}}</option>
+                                {{/catalogs}}
+                            </select>
+                        </td>
+                        <td><input type="text" name="productName" value="{{#product}}{{#productInfo}}{{productName}}{{/productInfo}}{{/product}}" required></td>
+                        <td><input type="text" name="imgSource" value="{{#product}}{{#productInfo}}{{imgSource}}{{/productInfo}}{{/product}}" required></td>
+                        <td><input type="number" name="priceInPennies" value="{{#product}}{{#productInfo}}{{priceInPennies}}{{/productInfo}}{{/product}}" required min="0"></td>
+                        <td>
+                            <select name="removalStatus" required>
+                                <option value="{{#product}}{{removalStatus}}{{/product}}" selected>{{#product}}{{removalStatus}}{{/product}}</option>
+                                {{#statusUnselected}}
+                                    <option value="{{name}}">{{name}}</option>
+                                {{/statusUnselected}}
+                            </select>
+                        </td>
+                        <td><button type="submit">Set</button><a href="/admin/modify?p={{#product}}{{UUID}}{{/product}}">Modify</a></td>
+                    </form>
+                </tr>
+            {{/products}}
+        </table>
+        </form>
+    </div>
 </body>

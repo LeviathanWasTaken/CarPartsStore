@@ -1,25 +1,31 @@
 package leviathan.CarPartsStore.services;
 
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.transaction.Transactional;
 import leviathan.CarPartsStore.domain.ProductDTO;
 import leviathan.CarPartsStore.domain.RemovalStatus;
+import leviathan.CarPartsStore.domain.SortingType;
 import leviathan.CarPartsStore.entity.Product;
+import leviathan.CarPartsStore.repos.CatalogRepo;
 import leviathan.CarPartsStore.repos.ProductRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class ProductsService {
 
     private final ProductRepo productRepo;
+    private final CatalogService catalogService;
+    private final CatalogRepo catalogRepo;
 
-    public ProductsService(ProductRepo productRepo) {
+    public ProductsService(ProductRepo productRepo, CatalogService catalogService, CatalogRepo catalogRepo) {
         this.productRepo = productRepo;
+        this.catalogService = catalogService;
+        this.catalogRepo = catalogRepo;
     }
     /*
     public Product getProduct(String uniqueTag) {
@@ -89,7 +95,7 @@ public class ProductsService {
         ProductDTO productDTO = new ProductDTO();
         productDTO.setProductUUID(product.getProductUUID());
         productDTO.setProductName(product.getProductName());
-        productDTO.setProductPicture(product.getImgSource());
+        productDTO.setProductPictures(product.getProductPictures());
         productDTO.setProductPriceInPennies(product.getPriceInPennies());
         productDTO.setProductDetails(product.getDetails());
         productDTO.setProductRemovalStatus(product.getRemovalStatus());
@@ -111,13 +117,36 @@ public class ProductsService {
         ));
     }
 
-    public List<ProductDTO> getPageOfActiveProductsByCatalogUUID(UUID catalogUUID, int pageNumber) {
-        Pageable pageable = PageRequest.of(pageNumber, 2);
-        Page<Product> productsFromDB = productRepo.findProductsByCatalogUUIDAndRemovalStatus(catalogUUID, RemovalStatus.ACTIVE, pageable);
+    public List<ProductDTO> getAllActiveProductsByCatalogUUID(UUID catalogUUID, SortingType sortingType) throws IllegalArgumentException {
+        List<Product> productsFromDB;
+        switch (sortingType) {
+            case PRICE_ASC -> productsFromDB = productRepo.findAllByCatalogCatalogUUIDAndRemovalStatusOrderByPriceInPenniesAsc(catalogUUID, RemovalStatus.ACTIVE);
+            case PRICE_DESC -> productsFromDB = productRepo.findAllByCatalogCatalogUUIDAndRemovalStatusOrderByPriceInPenniesDesc(catalogUUID, RemovalStatus.ACTIVE);
+            case POPULARITY_ASC -> productsFromDB = productRepo.findAllByCatalogCatalogUUIDAndRemovalStatusOrderByPopularityAsc(catalogUUID, RemovalStatus.ACTIVE);
+            case POPULARITY_DESC -> productsFromDB = productRepo.findAllByCatalogCatalogUUIDAndRemovalStatusOrderByPopularityDesc(catalogUUID, RemovalStatus.ACTIVE);
+            default -> throw new IllegalArgumentException("SortingType error. Can't resolve: " + sortingType);
+        }
         List<ProductDTO> products = new ArrayList<>();
         for (Product product : productsFromDB) {
-            products.add(productToProductDTO(product));
+            ProductDTO productDTO = new ProductDTO();
+            productDTO.setProductUUID(product.getProductUUID());
+            productDTO.setProductDescription(product.getDescription());
+            productDTO.setPreviewPicture(product.getProductPictures().get(0));
+            productDTO.setProductName(product.getProductName());
+            products.add(productDTO);
         }
         return products;
+    }
+
+    @Transactional
+    public void createProduct(ProductDTO productDTO) throws IllegalArgumentException {
+        Product product = new Product(catalogRepo.findByCatalogName(productDTO.getCatalogName()).orElseThrow(
+                () -> new IllegalArgumentException("There is catalog with name: " + productDTO.getCatalogName())
+        ));
+        product.setProductName(productDTO.getProductName());
+        product.setProductPictures(List.of(productDTO.getPreviewPicture()));
+        product.setPriceInPennies(productDTO.getProductPriceInPennies());
+        product.setDetails(Collections.EMPTY_MAP);
+        productRepo.save(product);
     }
 }

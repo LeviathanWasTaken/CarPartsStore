@@ -28,7 +28,7 @@ nav {
 .discount {
     background-image: linear-gradient(
         var(--discount-primary) 60%,
-        var(--discount-secondsry)
+        var(--discount-secondary)
     );
     display: flex;
     text-align: center;
