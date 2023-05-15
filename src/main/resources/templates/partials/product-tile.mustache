@@ -1,0 +1,17 @@
+<div class="product-tile">
+    <div class="product-img-section">
+        <img src="{{productPicture}}" class="product-img" alt="">
+    </div>
+    <div class="product-info-section">
+        <h1 class="product-name">{{productName}}</h1>
+        <h2 class="short-description">{{productDescription}}</h2>
+    </div>
+    <div class="add-to-cart-section">
+        {{#isAuthenticated}}
+            <a class="add-to-cart-button" href="/cart/add/{{productUUID}}">Add to cart</a>
+        {{/isAuthenticated}}
+        {{^isAuthenticated}}
+            <a class="unauthenticated-add-to-cart-button" href="/login">Log in to place items in cart</a>
+        {{/isAuthenticated}}
+    </div>
+</div>

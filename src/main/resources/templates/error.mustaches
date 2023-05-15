@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="/static/css/main.css">
+        <link rel="stylesheet" href="/static/css/blocks/catalog.css">
+        <link rel="icon" href="/static/img/favicon.svg" type="image/x-icon">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Car Parts Store - Error!</title>
+    </head>
+    <body>
+        {{>partials/header}}
+            <img class="error-pic" width="200px" height="200px" src="/static/img/error.svg" alt="">
+        {{errorStatus}}
+        {{errorMessage}}
+        {{>partials/footer}}
+    </body>
+</html>
