@@ -86,7 +86,11 @@ public class CatalogController {
             mav.addObject("catalogPath", catalogPath);
             mav.addObject("isCatalogPathEmpty", catalogPath.isEmpty());
 
-            mav.addObject("amountOfProducts", 5);
+            mav.addObject("amountOfProducts", products.size());
+
+            mav.addObject("isProductInCart", true);
+
+            mav.addObject("isProductOnSale", true);
         } catch (IllegalArgumentException e) {
             mav.setViewName("error.mustaches");
             mav.addObject("errorStatus", HttpStatusCode.valueOf(HttpServletResponse.SC_BAD_REQUEST));

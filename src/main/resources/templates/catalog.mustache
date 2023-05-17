@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/blocks/catalog.css">
     <link rel="stylesheet" href="/static/css/blocks/products-list.css">
+    <link rel="stylesheet" href="/static/css/blocks/products-filters.css">
     <link rel="icon" href="/static/img/favicon.svg" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Parts Store - {{currentCatalog.catalogName}}</title>
@@ -12,7 +13,7 @@
 <body>
 {{>partials/header}}
 {{>partials/user-bar}}
-<div class="catalog">
+<div class="catalog" id="catalog">
     {{^isCatalogPathEmpty}}
         <div class="catalog-path">
             {{#catalogPath}}
@@ -33,22 +34,85 @@
         </div>
     {{/isChildrenCatalogsEmpty}}
 </div>
-{{#isProductsEmpty}}
+{{^isProductsEmpty}}
     <div class="products">
-        <h1 class="products-title">Products list ({{amountOfProducts}} items found)</h1>
-        <div class="sorting-bar">
-            <a class="sorting-type-btn" href="/catalog/{{currentCatalog.catalogUUID}}?s={{searchRequest}}&sort=PRICE_ASC">cheap first</a>
-            <a class="sorting-type-btn" href="/catalog/{{currentCatalog.catalogUUID}}?s={{searchRequest}}&sort=PRICE_DESC">expensive first</a>
-            <a class="sorting-type-btn" href="/catalog/{{currentCatalog.catalogUUID}}?s={{searchRequest}}&sort=POPULARITY_ASC">popular first</a>
-            <a class="sorting-type-btn" href="/catalog/{{currentCatalog.catalogUUID}}?s={{searchRequest}}&sort=POPULARITY_DESC">unpopular first</a>
-        </div>
-        {{#products}}
-            <div class="products-list">
-                {{>partials/product-tile}}
+        <div class="products-header">
+            <h1 class="products-title">Products list ({{amountOfProducts}} items found)</h1>
+            <div class="sorting-bar">
+                <button class="sorting-type-btn" type="button" id="sort-by-price-asc-btn">cheap first</button>
+                <button class="sorting-type-btn" type="button" id="sort-by-price-desc-btn">expensive first</button>
+                <button class="sorting-type-btn" type="button" id="sort-by-popularity-asc-btn">unpopular first</button>
+                <button class="sorting-type-btn" type="button" id="sort-by-popularity-desc-btn">popular first</button>
             </div>
-        {{/products}}
+        </div>
+        <div class="products-main">
+            <div class="filters-section">
+                <div class="filters-title">Filters</div>
+                <div class="filters-content">
+                    <div class="filters-placeholder"><p>Coming soon...</p></div>
+                </div>
+            </div>
+            <div class="products-list">
+                {{#products}}
+                    {{>partials/product-tile}}
+                {{/products}}
+            </div>
+        </div>
     </div>
 {{/isProductsEmpty}}
 {{>partials/footer}}
+<script>
+    var priceElements = document.querySelectorAll('[class*="price-value"]');
+    priceElements.forEach(function (priceElement) {
+        var value = parseInt(priceElement.innerHTML);
+        priceElement.innerHTML = (value/100).toFixed(2);
+    });
+
+    var url = window.location.href;
+
+    var sortByPriceAscButton = document.getElementById("sort-by-price-asc-btn");
+    sortByPriceAscButton.addEventListener("click", function () {
+        applySorting("PRICE_ASC")
+    });
+    var sortByPriceDescButton = document.getElementById("sort-by-price-desc-btn");
+    sortByPriceDescButton.addEventListener("click", function () {
+        applySorting("PRICE_DESC")
+    });
+    var sortByPopularityAscButton = document.getElementById("sort-by-popularity-asc-btn");
+    sortByPopularityAscButton.addEventListener("click", function () {
+        applySorting("POPULARITY_ASC")
+    });
+    var sortByPopularityDescButton = document.getElementById("sort-by-popularity-desc-btn");
+    sortByPopularityDescButton.addEventListener("click", function () {
+        applySorting("POPULARITY_DESC")
+    });
+
+    if (url.includes("sort=PRICE_ASC")) {
+        disableSortingButton(sortByPriceAscButton);
+    } else if (url.includes("sort=PRICE_DESC")) {
+        disableSortingButton(sortByPriceDescButton);
+    } else if (url.includes("sort=POPULARITY_ASC")) {
+        disableSortingButton(sortByPopularityAscButton);
+    } else if (url.includes("sort=POPULARITY_DESC")) {
+        disableSortingButton(sortByPopularityDescButton);
+    } else {
+        disableSortingButton(sortByPopularityDescButton);
+    }
+
+    function disableSortingButton(button) {
+        button.className = "sorting-type-btn-selected";
+        button.disabled = true;
+    }
+
+    function applySorting(sortingType) {
+        var parameterName = "sort";
+        var currentUrl = window.location.href;
+        if (currentUrl.includes("sort=")) {
+            window.location.href = currentUrl.replace(new RegExp(`${parameterName}=[^&]*`), `${parameterName}=${sortingType}`);
+        } else {
+            window.location.href = currentUrl + (currentUrl.includes("?") ? "&" : "?") + `${parameterName}=${sortingType}`;
+        }
+    }
+</script>
 </body>
 </html>

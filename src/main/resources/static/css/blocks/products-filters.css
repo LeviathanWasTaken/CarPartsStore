@@ -1,0 +1,33 @@
+.filters-section {
+    max-width: 250px;
+    width: 100%;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    height: 300px;
+
+    background-color: rgb(255, 255, 255);
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 2px 0px;
+    border: 1px solid;
+    border-radius: 10px;
+    border-color: var(--catalog-border-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.filters-title {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 25px;
+    color: var(--nav-text-color);
+    font-weight: bold;
+    line-height: 1.5;
+}
+
+@media screen and (max-width: 800px){
+    .filters-section {
+        max-width: 800px;
+        width: auto;
+    }
+}

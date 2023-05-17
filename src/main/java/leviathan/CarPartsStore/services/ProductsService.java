@@ -133,6 +133,7 @@ public class ProductsService {
             productDTO.setProductDescription(product.getDescription());
             productDTO.setPreviewPicture(product.getProductPictures().get(0));
             productDTO.setProductName(product.getProductName());
+            productDTO.setProductPriceInPennies(product.getPriceInPennies());
             products.add(productDTO);
         }
         return products;
@@ -141,12 +142,14 @@ public class ProductsService {
     @Transactional
     public void createProduct(ProductDTO productDTO) throws IllegalArgumentException {
         Product product = new Product(catalogRepo.findByCatalogName(productDTO.getCatalogName()).orElseThrow(
-                () -> new IllegalArgumentException("There is catalog with name: " + productDTO.getCatalogName())
+                () -> new IllegalArgumentException("There is no catalog with name: " + productDTO.getCatalogName())
         ));
         product.setProductName(productDTO.getProductName());
         product.setProductPictures(List.of(productDTO.getPreviewPicture()));
         product.setPriceInPennies(productDTO.getProductPriceInPennies());
-        product.setDetails(Collections.EMPTY_MAP);
+        HashMap<String, Object> details = new HashMap<>();
+        details.put("test", "test");
+        product.setDetails(details);
         productRepo.save(product);
     }
 }

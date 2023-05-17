@@ -33,7 +33,7 @@
             {{#catalogs}}
                 <tr>
                     <form action="/admin/catalog/edit" method="post">
-                        <td><input type="text" name="catalogUUID" value="{{catalogUUID}}" disabled></td>
+                        <td><input type="text" name="catalogUUID" value="{{catalogUUID}}" readonly></td>
                         <td><input type="text" name="Status" value="{{removalStatus}}" disabled></td>
                         <td><input type="text" name="catalogName" value="{{catalogName}}" required></td>
                         <td><input type="text" name="catalogPicture" value="{{catalogPicture}}" required></td>

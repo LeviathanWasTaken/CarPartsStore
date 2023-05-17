@@ -27,7 +27,7 @@
 
 .user-bar {
     min-height: 100px;
-    margin: 30px 5px 0;
+    margin: 15px 5px 15px;
     background-color: rgb(255, 255, 255);
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 2px 0px;
     border: 1px solid;
@@ -127,7 +127,7 @@
     text-decoration: none;
 }
 
-.price {
+.total-price-of-items-in-cart {
     font-size: 25px;
     font-weight: bold;
     color: var(--discount-secondary);

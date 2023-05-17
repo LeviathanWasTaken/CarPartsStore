@@ -1,14 +1,45 @@
 <div class="product-tile">
     <div class="product-img-section">
-        <img src="{{productPicture}}" class="product-img" alt="">
+        <img width="200px" height="200px" src="{{previewPicture}}" class="product-img" alt="">
     </div>
     <div class="product-info-section">
         <h1 class="product-name">{{productName}}</h1>
-        <h2 class="short-description">{{productDescription}}</h2>
+        <div class="product-attributes">
+            <div class="product-attribute">
+                <img class="product-attribute-img" src="/static/img/favicon.svg" alt="">
+                <p class="product-attribute-value">A</p>
+                <span class="product-attribute-title">Fuel efficiency</span>
+            </div>
+            <div class="product-attribute">
+                <img class="product-attribute-img" src="/static/img/favicon.svg" alt="">
+                <p class="product-attribute-value">A</p>
+                <span class="product-attribute-title">Fuel efficiency</span>
+            </div>
+        </div>
+        <div class="product-info-footer">
+            <a class="product-rating" href="/product/{{productUUID}}#reviews">Rating: 3</a>
+            {{#isProductOnSale}}
+                <div class="product-on-sale-tile">On Sale</div>
+            {{/isProductOnSale}}
+        </div>
     </div>
     <div class="add-to-cart-section">
+        <div class="product-price-section">
+            {{#isProductOnSale}}
+                <div class="product-sale-old-price"><s>$<span class="product-price-value">{{productPriceInPennies}}</span></s></div>
+                <div class="product-sale-new-price">$<span class="product-price-value">{{productPriceInPennies}}</span></div>
+            {{/isProductOnSale}}
+            {{^isProductOnSale}}
+                <div class="product-price">$<span class="product-price-value">{{productPriceInPennies}}</span></div>
+            {{/isProductOnSale}}
+        </div>
         {{#isAuthenticated}}
-            <a class="add-to-cart-button" href="/cart/add/{{productUUID}}">Add to cart</a>
+            {{#isProductInCart}}
+                <a class="go-to-cart-button" href="/cart">In cart</a>
+            {{/isProductInCart}}
+            {{^isProductInCart}}
+                <a class="add-to-cart-button" href="/cart/add/{{productUUID}}">Add to cart</a>
+            {{/isProductInCart}}
         {{/isAuthenticated}}
         {{^isAuthenticated}}
             <a class="unauthenticated-add-to-cart-button" href="/login">Log in to place items in cart</a>

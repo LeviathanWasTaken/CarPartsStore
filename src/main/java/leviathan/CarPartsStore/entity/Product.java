@@ -34,8 +34,6 @@ public class Product {
     private List<CartItem> cartItems;
     @Column(name = "removal_status")
     private RemovalStatus removalStatus;
-    @Column(name = "business_status")
-    private Status businessStatus;
     @OneToMany(mappedBy = "product")
     private List<Review> reviews;
     private int popularity;

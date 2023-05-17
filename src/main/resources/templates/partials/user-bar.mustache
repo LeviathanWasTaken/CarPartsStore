@@ -17,8 +17,8 @@
                  {{#cart}}
                      <a class="cart" href="/cart">
                          <div class="cart-details">
-                             <div class="goods">{{totalQuantityOfItemsInCart}} items</div>
-                             <div class="price">$<span id="price">{{totalPriceInPennies}}</span>
+                             <div class="amount-of-items-in-cart">{{totalQuantityOfItemsInCart}} items</div>
+                             <div class="total-price-of-items-in-cart">$<span class="price-value">{{totalPriceInPennies}}</span>
                              </div>
                          </div>
                          <img src="/static/img/basket.svg" alt="cart">
@@ -30,9 +30,4 @@
             <a class="login-link" href="/login">Login with Github</a>
         {{/isAuthenticated}}
     </div>
-    <script>
-        var valueElement = document.getElementById("price");
-        var value = parseInt(valueElement.innerHTML);
-        valueElement.innerHTML = (value / 100).toFixed(2);
-    </script>
 </div>
