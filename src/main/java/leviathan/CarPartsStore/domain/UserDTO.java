@@ -18,4 +18,6 @@ public class UserDTO {
     private String email;
     private String deliveryAddress;
     private Set<Roles> roles;
+    private int totalPriceOfItemsInCartInPennies;
+    private int totalQuantityOfItemsInCart;
 }

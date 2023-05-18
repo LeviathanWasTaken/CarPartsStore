@@ -70,6 +70,14 @@
 
     var url = window.location.href;
 
+    var params = url.substring(url.indexOf("?") + 1).split("&");
+    params.forEach(function (param) {
+        var paramName = param.split("=")[0];
+        if (paramName === "s") {
+            document.getElementById("search").value = param.split("=")[1].replaceAll("+", " ");
+        }
+    });
+
     var sortByPriceAscButton = document.getElementById("sort-by-price-asc-btn");
     sortByPriceAscButton.addEventListener("click", function () {
         applySorting("PRICE_ASC")

@@ -1,10 +1,7 @@
 package leviathan.CarPartsStore.controllers;
 
 import jakarta.servlet.http.HttpServletResponse;
-import leviathan.CarPartsStore.domain.CatalogDTO;
-import leviathan.CarPartsStore.domain.ProductDTO;
-import leviathan.CarPartsStore.domain.SortingType;
-import leviathan.CarPartsStore.domain.UserDTO;
+import leviathan.CarPartsStore.domain.*;
 import leviathan.CarPartsStore.services.AuthorizationService;
 import leviathan.CarPartsStore.services.CatalogService;
 import leviathan.CarPartsStore.services.ProductsService;
@@ -31,9 +28,7 @@ public class CatalogController {
     private final UserService userService;
     private final ProductsService productsService;
 
-    public CatalogController(AuthorizationService authorizationService,
-                             CatalogService catalogService,
-                             UserService userService, ProductsService productsService) {
+    public CatalogController(AuthorizationService authorizationService, CatalogService catalogService, UserService userService, ProductsService productsService) {
         this.authorizationService = authorizationService;
         this.catalogService = catalogService;
         this.userService = userService;
@@ -54,11 +49,7 @@ public class CatalogController {
 
      */
     @GetMapping("/catalog/{catalogUUID}")
-    public ModelAndView catalog(@PathVariable UUID catalogUUID,
-                                @RequestParam(name = "s", required = false, defaultValue = "") String searchRequest,
-                                @RequestParam(name = "sort", required = false, defaultValue = "POPULARITY_DESC") SortingType sortingType,
-                                OAuth2AuthenticationToken oAuth2AuthenticationToken,
-                                HttpServletResponse httpServletResponse) throws IOException {
+    public ModelAndView catalog(@PathVariable UUID catalogUUID, @RequestParam(name = "s", required = false, defaultValue = "") String searchRequest, @RequestParam(name = "sort", required = false, defaultValue = "POPULARITY_DESC") SortingType sortingType, OAuth2AuthenticationToken oAuth2AuthenticationToken, HttpServletResponse httpServletResponse) throws IOException {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("catalog");
         mav.addObject("top5Catalogs", catalogService.getTop5ActiveByPopularity());
@@ -69,8 +60,9 @@ public class CatalogController {
 
             boolean isAuthenticated = authorizationService.isUserAuthenticated(oAuth2AuthenticationToken);
             mav.addObject("isAuthenticated", isAuthenticated);
+            UserDTO user = null;
             if (isAuthenticated) {
-                UserDTO user = authorizationService.authorize(oAuth2AuthenticationToken);
+                user = authorizationService.authorize(oAuth2AuthenticationToken);
                 mav.addObject("user", user);
                 mav.addObject("cart", userService.getUserCartByUserUUID(user.getUserUUID()));
             }
@@ -78,7 +70,10 @@ public class CatalogController {
             List<CatalogDTO> catalogs = catalogService.getActiveChildCatalogs(catalogUUID);
             mav.addObject("childrenCatalogs", catalogs);
             mav.addObject("isChildrenCatalogsEmpty", catalogs.isEmpty());
-            List<ProductDTO> products = productsService.getAllActiveProductsByCatalogUUID(catalogUUID, sortingType);
+            List<ProductDTO> products = productsService.getAllActiveProductsByCatalogUUID(catalogUUID, sortingType, user);
+            for (ProductDTO productDTO : products) {
+                productDTO.getProductAttributes().add(new ProductAttribute("Fuel efficiency", "/static/img/favicon.svg", "A"));
+            }
             mav.addObject("products", products);
             mav.addObject("isProductsEmpty", products.isEmpty());
 

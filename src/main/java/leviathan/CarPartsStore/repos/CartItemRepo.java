@@ -9,4 +9,6 @@ import java.util.UUID;
 public interface CartItemRepo extends CrudRepository<CartItem, UUID> {
 
     Iterable<CartItem> findAllByProduct(Product product);
+
+
 }

@@ -3,21 +3,18 @@
         <img width="200px" height="200px" src="{{previewPicture}}" class="product-img" alt="">
     </div>
     <div class="product-info-section">
-        <h1 class="product-name">{{productName}}</h1>
+        <a class="product-name" href="/product/{{productUUID}}">{{productName}}</a>
         <div class="product-attributes">
-            <div class="product-attribute">
-                <img class="product-attribute-img" src="/static/img/favicon.svg" alt="">
-                <p class="product-attribute-value">A</p>
-                <span class="product-attribute-title">Fuel efficiency</span>
-            </div>
-            <div class="product-attribute">
-                <img class="product-attribute-img" src="/static/img/favicon.svg" alt="">
-                <p class="product-attribute-value">A</p>
-                <span class="product-attribute-title">Fuel efficiency</span>
-            </div>
+            {{#productAttributes}}
+                <div class="product-attribute">
+                    <img class="product-attribute-img" src="{{attributePicture}}" alt="">
+                    <p class="product-attribute-value">{{attributeValue}}</p>
+                    <span class="product-attribute-title">{{attributeName}}</span>
+                </div>
+            {{/productAttributes}}
         </div>
         <div class="product-info-footer">
-            <a class="product-rating" href="/product/{{productUUID}}#reviews">Rating: 3</a>
+            <a class="product-rating" href="/product/{{productUUID}}#reviews">Rating: {{productRating}}</a>
             {{#isProductOnSale}}
                 <div class="product-on-sale-tile">On Sale</div>
             {{/isProductOnSale}}

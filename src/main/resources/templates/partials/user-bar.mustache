@@ -13,17 +13,15 @@
                              </div>
                          </div>
                      </div>
-                 {{/user}}
-                 {{#cart}}
                      <a class="cart" href="/cart">
                          <div class="cart-details">
                              <div class="amount-of-items-in-cart">{{totalQuantityOfItemsInCart}} items</div>
-                             <div class="total-price-of-items-in-cart">$<span class="price-value">{{totalPriceInPennies}}</span>
+                             <div class="total-price-of-items-in-cart">$<span class="price-value">{{totalPriceOfItemsInCartInPennies}}</span>
                              </div>
                          </div>
                          <img src="/static/img/basket.svg" alt="cart">
                      </a>
-                 {{/cart}}
+                 {{/user}}
              </div>
         {{/isAuthenticated}}
         {{^isAuthenticated}}

@@ -1,16 +1,15 @@
 package leviathan.CarPartsStore.services;
 
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
-import leviathan.CarPartsStore.domain.ProductDTO;
-import leviathan.CarPartsStore.domain.RemovalStatus;
-import leviathan.CarPartsStore.domain.SortingType;
+import leviathan.CarPartsStore.domain.*;
+import leviathan.CarPartsStore.entity.CartItem;
+import leviathan.CarPartsStore.entity.Discount;
 import leviathan.CarPartsStore.entity.Product;
+import leviathan.CarPartsStore.entity.User;
+import leviathan.CarPartsStore.repos.CartItemRepo;
 import leviathan.CarPartsStore.repos.CatalogRepo;
 import leviathan.CarPartsStore.repos.ProductRepo;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import leviathan.CarPartsStore.repos.UserRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -21,11 +20,15 @@ public class ProductsService {
     private final ProductRepo productRepo;
     private final CatalogService catalogService;
     private final CatalogRepo catalogRepo;
+    private final UserRepo userRepo;
+    private final CartItemRepo cartItemRepo;
 
-    public ProductsService(ProductRepo productRepo, CatalogService catalogService, CatalogRepo catalogRepo) {
+    public ProductsService(ProductRepo productRepo, CatalogService catalogService, CatalogRepo catalogRepo, UserRepo userRepo, CartItemRepo cartItemRepo) {
         this.productRepo = productRepo;
         this.catalogService = catalogService;
         this.catalogRepo = catalogRepo;
+        this.userRepo = userRepo;
+        this.cartItemRepo = cartItemRepo;
     }
     /*
     public Product getProduct(String uniqueTag) {
@@ -99,6 +102,7 @@ public class ProductsService {
         productDTO.setProductPriceInPennies(product.getPriceInPennies());
         productDTO.setProductDetails(product.getDetails());
         productDTO.setProductRemovalStatus(product.getRemovalStatus());
+        productDTO.setProductCatalogUUID(product.getCatalog().getCatalogUUID());
         return productDTO;
     }
 
@@ -117,23 +121,35 @@ public class ProductsService {
         ));
     }
 
-    public List<ProductDTO> getAllActiveProductsByCatalogUUID(UUID catalogUUID, SortingType sortingType) throws IllegalArgumentException {
+    public List<ProductDTO> getAllActiveProductsByCatalogUUID(UUID catalogUUID, SortingType sortingType, UserDTO user) throws IllegalArgumentException {
         List<Product> productsFromDB;
         switch (sortingType) {
             case PRICE_ASC -> productsFromDB = productRepo.findAllByCatalogCatalogUUIDAndRemovalStatusOrderByPriceInPenniesAsc(catalogUUID, RemovalStatus.ACTIVE);
             case PRICE_DESC -> productsFromDB = productRepo.findAllByCatalogCatalogUUIDAndRemovalStatusOrderByPriceInPenniesDesc(catalogUUID, RemovalStatus.ACTIVE);
-            case POPULARITY_ASC -> productsFromDB = productRepo.findAllByCatalogCatalogUUIDAndRemovalStatusOrderByPopularityAsc(catalogUUID, RemovalStatus.ACTIVE);
-            case POPULARITY_DESC -> productsFromDB = productRepo.findAllByCatalogCatalogUUIDAndRemovalStatusOrderByPopularityDesc(catalogUUID, RemovalStatus.ACTIVE);
+            case POPULARITY_ASC -> productsFromDB = productRepo.findAllByCatalogCatalogUUIDAndRemovalStatusOrderByProductRatingAsc(catalogUUID, RemovalStatus.ACTIVE);
+            case POPULARITY_DESC -> productsFromDB = productRepo.findAllByCatalogCatalogUUIDAndRemovalStatusOrderByProductRatingDesc(catalogUUID, RemovalStatus.ACTIVE);
             default -> throw new IllegalArgumentException("SortingType error. Can't resolve: " + sortingType);
         }
         List<ProductDTO> products = new ArrayList<>();
         for (Product product : productsFromDB) {
             ProductDTO productDTO = new ProductDTO();
             productDTO.setProductUUID(product.getProductUUID());
-            productDTO.setProductDescription(product.getDescription());
             productDTO.setPreviewPicture(product.getProductPictures().get(0));
             productDTO.setProductName(product.getProductName());
             productDTO.setProductPriceInPennies(product.getPriceInPennies());
+            productDTO.setProductRating(product.getProductRating());
+            if (user != null) {
+                User userFromBD = userRepo.findById(user.getUserUUID()).orElse(null);
+                if (userFromBD != null) {
+                    for (CartItem cartItem : userFromBD.getCart().getCartItems()) {
+                        if (cartItem.getProduct().equals(product)) {
+                            productDTO.setProductInCart(true);
+                        }
+                    }
+                }
+            }
+            productDTO.setProductOnSale(!product.getDiscounts().isEmpty());
+            if (productDTO.isProductOnSale()) productDTO.setProductDiscountInPercents(12);
             products.add(productDTO);
         }
         return products;

@@ -1,19 +1,34 @@
 package leviathan.CarPartsStore.services;
 
+import jakarta.transaction.Transactional;
+import leviathan.CarPartsStore.domain.ProductDTO;
 import leviathan.CarPartsStore.domain.RemovalStatus;
+import leviathan.CarPartsStore.domain.UserDTO;
 import leviathan.CarPartsStore.entity.Cart;
 import leviathan.CarPartsStore.entity.CartItem;
+import leviathan.CarPartsStore.entity.Product;
+import leviathan.CarPartsStore.entity.User;
+import leviathan.CarPartsStore.repos.CartItemRepo;
 import leviathan.CarPartsStore.repos.CartRepo;
+import leviathan.CarPartsStore.repos.ProductRepo;
+import leviathan.CarPartsStore.repos.UserRepo;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
+import java.util.stream.Stream;
 
 @Service
 public class CartService {
     private final CartRepo cartRepo;
+    private final ProductRepo productRepo;
+    private final UserRepo userRepo;
+    private final CartItemRepo cartItemRepo;
 
-    public CartService(CartRepo cartRepo) {
+    public CartService(CartRepo cartRepo, ProductRepo productRepo, UserRepo userRepo, CartItemRepo cartItemRepo) {
         this.cartRepo = cartRepo;
+        this.productRepo = productRepo;
+        this.userRepo = userRepo;
+        this.cartItemRepo = cartItemRepo;
     }
     /*
     private final UserService userService;
@@ -146,5 +161,20 @@ public class CartService {
         return totalAmount;
     }
 
-
+    @Transactional
+    public void addProductToCart(UserDTO user, UUID productUUID) {
+        Product productFromDB = productRepo.findById(productUUID).orElseThrow(
+                () -> new IllegalArgumentException("There is no product with UUID: " + productUUID)
+        );
+        User userFromDB = userRepo.findById(user.getUserUUID()).orElseThrow(
+                () -> new IllegalArgumentException("There is no user with UUID: " + user.getUserUUID())
+        );
+        Cart cart = userFromDB.getCart();
+        CartItem newCartItem = new CartItem();
+        newCartItem.setProduct(productFromDB);
+        newCartItem.setQuantity(1);
+        newCartItem.setCart(cart);
+        cartItemRepo.save(newCartItem);
+        cartRepo.save(cart);
+    }
 }

@@ -43,7 +43,6 @@ public class MainController {
         if (isAuthenticated) {
             UserDTO user = authorizationService.authorize(oAuth2AuthenticationToken);
             mav.addObject("user", user);
-            mav.addObject("cart", userService.getUserCartByUserUUID(user.getUserUUID()));
         }
         return mav;
     }

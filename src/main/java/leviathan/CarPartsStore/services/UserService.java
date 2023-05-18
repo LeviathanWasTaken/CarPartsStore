@@ -2,10 +2,9 @@ package leviathan.CarPartsStore.services;
 
 import jakarta.transaction.Transactional;
 import leviathan.CarPartsStore.domain.CartDTO;
+import leviathan.CarPartsStore.domain.RemovalStatus;
 import leviathan.CarPartsStore.domain.UserDTO;
-import leviathan.CarPartsStore.entity.Cart;
-import leviathan.CarPartsStore.entity.Roles;
-import leviathan.CarPartsStore.entity.User;
+import leviathan.CarPartsStore.entity.*;
 import leviathan.CarPartsStore.repos.CartItemRepo;
 import leviathan.CarPartsStore.repos.CartRepo;
 import leviathan.CarPartsStore.repos.UserRepo;
@@ -48,24 +47,34 @@ public class UserService {
         Cart cart = new Cart();
         cartRepo.save(cart);
         User user = new User((int) attributes.get("id"),
-                             (String) attributes.get("avatar_url"),
-                             (String) attributes.get("login"),
-                             cart,
-                             Collections.singleton(Roles.USER)
+                (String) attributes.get("avatar_url"),
+                (String) attributes.get("login"),
+                cart,
+                Collections.singleton(Roles.USER)
         );
         userRepo.save(user);
         user = userRepo.findByGithubId((int) attributes.get("id")).orElseThrow(
                 () -> new RuntimeException("Unable to create new user")
         );
-        return new UserDTO(
-                user.getUuid(),
-                user.getName(),
-                user.getLogin(),
-                user.getAvatar(),
-                user.getEmail(),
-                user.getDeliveryAddress(),
-                user.getRoles()
-        );
+        if (user != null) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUserUUID(user.getUuid());
+            userDTO.setName(user.getName());
+            userDTO.setAvatar(user.getAvatar());
+            userDTO.setLogin(user.getLogin());
+            userDTO.setEmail(user.getEmail());
+            userDTO.setDeliveryAddress(user.getDeliveryAddress());
+            userDTO.setRoles(user.getRoles());
+            userDTO.setTotalQuantityOfItemsInCart(user.getCart().getCartItems().size());
+            for (CartItem cartItem : user.getCart().getCartItems()) {
+                if (cartItem.getProduct().getRemovalStatus().equals(RemovalStatus.ACTIVE)) {
+                    userDTO.setTotalPriceOfItemsInCartInPennies(
+                            userDTO.getTotalPriceOfItemsInCartInPennies() +
+                                    cartItem.getProduct().getPriceInPennies());
+                }
+            }
+            return userDTO;
+        } else return null;
     }
 
     public Iterable<User> getAllUsers() {
@@ -78,16 +87,25 @@ public class UserService {
 
     public UserDTO getUserByGithubId(int id) {
         User user = userRepo.findByGithubId(id).orElse(null);
-        return
-                user==null ? null : new UserDTO(
-                    user.getUuid(),
-                    user.getName(),
-                    user.getLogin(),
-                    user.getAvatar(),
-                    user.getEmail(),
-                    user.getDeliveryAddress(),
-                    user.getRoles()
-                );
+        if (user != null) {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setUserUUID(user.getUuid());
+            userDTO.setName(user.getName());
+            userDTO.setAvatar(user.getAvatar());
+            userDTO.setLogin(user.getLogin());
+            userDTO.setEmail(user.getEmail());
+            userDTO.setDeliveryAddress(user.getDeliveryAddress());
+            userDTO.setRoles(user.getRoles());
+            userDTO.setTotalQuantityOfItemsInCart(user.getCart().getCartItems().size());
+            for (CartItem cartItem : user.getCart().getCartItems()) {
+                if (cartItem.getProduct().getRemovalStatus().equals(RemovalStatus.ACTIVE)) {
+                    userDTO.setTotalPriceOfItemsInCartInPennies(
+                            userDTO.getTotalPriceOfItemsInCartInPennies() +
+                            cartItem.getProduct().getPriceInPennies());
+                }
+            }
+            return userDTO;
+        } else return null;
     }
 
     public Optional<User> getByUUID(UUID userUUID) {

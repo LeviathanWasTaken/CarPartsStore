@@ -1,14 +1,15 @@
 package leviathan.CarPartsStore.entity;
 
 import jakarta.persistence.*;
+import leviathan.CarPartsStore.domain.ProductAttribute;
 import leviathan.CarPartsStore.domain.RemovalStatus;
-import leviathan.CarPartsStore.domain.Status;
 import leviathan.CarPartsStore.services.ListToStringConverter;
 import leviathan.CarPartsStore.services.MapConverter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -36,12 +37,17 @@ public class Product {
     private RemovalStatus removalStatus;
     @OneToMany(mappedBy = "product")
     private List<Review> reviews;
-    private int popularity;
-    private String description;
+    private int productRating;
+    @ManyToMany(mappedBy = "discountProducts")
+    private List<Discount> discounts;
+    @Convert(converter = ListToStringConverter.class)
+    private List<ProductAttribute> productAttributes;
 
     public Product(Catalog catalog) {
         this.catalog = catalog;
         removalStatus = RemovalStatus.ACTIVE;
+        productRating = 0;
+        productAttributes = new ArrayList<>();
     }
 
 }

@@ -133,6 +133,10 @@
     color: var(--nav-text-color);
 }
 
+.product-name:hover {
+    color: var(--nav-text-color-onhover);
+}
+
 .product-attributes {
     display: flex;
     column-gap: 10px;
@@ -312,7 +316,10 @@
     .add-to-cart-section {
         text-align: left;
     }
-    .product-price {
+    .product-price-section {
+        justify-content: left;
+    }
+    .product-price, .product-sale-old-price, .product-sale-new-price {
         padding-top: 0;
         min-height: 0;
     }
