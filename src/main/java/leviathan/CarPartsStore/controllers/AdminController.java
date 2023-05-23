@@ -44,7 +44,7 @@ public class AdminController {
             return mav;
         }
         mav.addObject("rootCatalog", catalogService.getCatalogByUUID(UUID.fromString(rootCatalogUUID)));
-        mav.addObject("top5Catalogs", catalogService.getTop5ActiveByPopularity());
+        mav.addObject("top5Catalogs", catalogService.getTop4ActiveByPopularity());
         mav.addObject("message", message);
         mav.addObject("messageType", messageType);
         mav.addObject("catalogs", catalogService.getAllCatalogs());

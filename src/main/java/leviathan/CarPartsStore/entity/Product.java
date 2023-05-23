@@ -1,7 +1,6 @@
 package leviathan.CarPartsStore.entity;
 
 import jakarta.persistence.*;
-import leviathan.CarPartsStore.domain.ProductAttribute;
 import leviathan.CarPartsStore.domain.RemovalStatus;
 import leviathan.CarPartsStore.services.ListToStringConverter;
 import leviathan.CarPartsStore.services.MapConverter;
@@ -40,14 +39,13 @@ public class Product {
     private int productRating;
     @ManyToMany(mappedBy = "discountProducts")
     private List<Discount> discounts;
-    @Convert(converter = ListToStringConverter.class)
+    @OneToMany(mappedBy = "product")
     private List<ProductAttribute> productAttributes;
 
     public Product(Catalog catalog) {
         this.catalog = catalog;
         removalStatus = RemovalStatus.ACTIVE;
         productRating = 0;
-        productAttributes = new ArrayList<>();
     }
 
 }

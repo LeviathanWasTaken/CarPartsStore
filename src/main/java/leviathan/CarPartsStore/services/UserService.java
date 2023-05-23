@@ -96,14 +96,16 @@ public class UserService {
             userDTO.setEmail(user.getEmail());
             userDTO.setDeliveryAddress(user.getDeliveryAddress());
             userDTO.setRoles(user.getRoles());
-            userDTO.setTotalQuantityOfItemsInCart(user.getCart().getCartItems().size());
+            int totalQuantity = 0;
             for (CartItem cartItem : user.getCart().getCartItems()) {
                 if (cartItem.getProduct().getRemovalStatus().equals(RemovalStatus.ACTIVE)) {
                     userDTO.setTotalPriceOfItemsInCartInPennies(
                             userDTO.getTotalPriceOfItemsInCartInPennies() +
-                            cartItem.getProduct().getPriceInPennies());
+                            cartItem.getProduct().getPriceInPennies()*cartItem.getQuantity());
+                    totalQuantity += cartItem.getQuantity();
                 }
             }
+            userDTO.setTotalQuantityOfItemsInCart(totalQuantity);
             return userDTO;
         } else return null;
     }

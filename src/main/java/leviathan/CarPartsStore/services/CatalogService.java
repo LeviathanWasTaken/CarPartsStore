@@ -64,8 +64,8 @@ public class CatalogService {
      * Finds top 5 active catalogs by popularity
      * @return List<CatalogDTO>
      */
-    public List<CatalogDTO> getTop5ActiveByPopularity() {
-        List<Catalog> catalogsFromDB = catalogRepo.findFirst5ByRemovalStatusAndCatalogUUIDIsNotOrderByPopularityDesc(
+    public List<CatalogDTO> getTop4ActiveByPopularity() {
+        List<Catalog> catalogsFromDB = catalogRepo.findFirst4ByRemovalStatusAndCatalogUUIDIsNotOrderByPopularityDesc(
                 RemovalStatus.ACTIVE,
                 UUID.fromString(rootCatalogUUID));
         List<CatalogDTO> catalogs = new ArrayList<>();

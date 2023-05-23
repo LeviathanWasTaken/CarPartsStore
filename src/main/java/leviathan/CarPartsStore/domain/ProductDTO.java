@@ -1,5 +1,6 @@
 package leviathan.CarPartsStore.domain;
 
+import leviathan.CarPartsStore.entity.ProductAttribute;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,5 +29,5 @@ public class ProductDTO {
     private boolean isProductOnSale;
     private boolean isProductInCart;
     private Map<String, Object> productDetails;
-    private List<ProductAttribute> productAttributes = new ArrayList<>();
+    private List<ProductAttributeDTO> productAttributes = new ArrayList<>();
 }

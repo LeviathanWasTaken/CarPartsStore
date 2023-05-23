@@ -1,7 +1,7 @@
 package leviathan.CarPartsStore.services;
 
 import jakarta.transaction.Transactional;
-import leviathan.CarPartsStore.domain.ProductDTO;
+import leviathan.CarPartsStore.domain.CartItemDTO;
 import leviathan.CarPartsStore.domain.RemovalStatus;
 import leviathan.CarPartsStore.domain.UserDTO;
 import leviathan.CarPartsStore.entity.Cart;
@@ -14,8 +14,9 @@ import leviathan.CarPartsStore.repos.ProductRepo;
 import leviathan.CarPartsStore.repos.UserRepo;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
-import java.util.stream.Stream;
 
 @Service
 public class CartService {
@@ -140,6 +141,26 @@ public class CartService {
         );
     }
 
+    public List<CartItemDTO> getCartItems(UserDTO user) {
+        User userFromDB = userRepo.findById(user.getUserUUID()).orElseThrow(
+                () -> new IllegalArgumentException("There is no user with UUID: " + user.getUserUUID())
+        );
+        List<CartItemDTO> cartItems = new ArrayList<>();
+        List<CartItem> cartItemsFromDB = userFromDB.getCart().getCartItems();
+        for (CartItem cartItemFromDB : cartItemsFromDB) {
+            CartItemDTO cartItem = new CartItemDTO();
+            cartItem.setCartItemUUID(cartItemFromDB.getCartItemUUID());
+            cartItem.setCartItemQuantity(cartItemFromDB.getQuantity());
+            cartItem.setCartItemTotalPriceInPennies(cartItemFromDB.getQuantity()*cartItemFromDB.getProduct().getPriceInPennies());
+            cartItem.setCartItemProductName(cartItemFromDB.getProduct().getProductName());
+            cartItem.setCartItemProductUUID(cartItemFromDB.getProduct().getProductUUID());
+            cartItem.setCartItemProductPreviewPicture(cartItemFromDB.getProduct().getProductPictures().get(0));
+            cartItem.setCartItemProductPriceInPennies(cartItemFromDB.getProduct().getPriceInPennies());
+            cartItems.add(cartItem);
+        }
+        return cartItems;
+    }
+
 
     public int calculateTotalPriceOfActiveElementsInCart(UUID cartUUID) {
         Cart cart = getCartFromDBByUUID(cartUUID);
@@ -162,7 +183,7 @@ public class CartService {
     }
 
     @Transactional
-    public void addProductToCart(UserDTO user, UUID productUUID) {
+    public void addProductToCart(UserDTO user, UUID productUUID) throws IllegalArgumentException {
         Product productFromDB = productRepo.findById(productUUID).orElseThrow(
                 () -> new IllegalArgumentException("There is no product with UUID: " + productUUID)
         );
@@ -176,5 +197,56 @@ public class CartService {
         newCartItem.setCart(cart);
         cartItemRepo.save(newCartItem);
         cartRepo.save(cart);
+    }
+
+    public boolean hasUserCartCartItem(UserDTO user, UUID cartItemUUID) throws IllegalArgumentException {
+        User userFromDB = userRepo.findById(user.getUserUUID()).orElseThrow(
+                () -> new IllegalArgumentException("There is no user with UUID: " + user.getUserUUID())
+        );
+        Cart userCart = userFromDB.getCart();
+        for (CartItem cartItem : userCart.getCartItems()) {
+            if (cartItem.getCartItemUUID().equals(cartItemUUID)) return true;
+        }
+        return false;
+    }
+
+    public void increaseCartItemQuantity(UserDTO user, UUID cartItemUUID) throws IllegalArgumentException {
+        User userFromDB = userRepo.findById(user.getUserUUID()).orElseThrow(
+                () -> new IllegalArgumentException("There is no user with UUID: " + user.getUserUUID())
+        );
+        Cart userCart = userFromDB.getCart();
+        CartItem cartItem = userCart.getCartItems().stream().filter(item -> item.getCartItemUUID().equals(cartItemUUID)).findFirst().orElseThrow(
+                () -> new IllegalArgumentException("There is no cart item with UUID: " + cartItemUUID)
+        );
+        cartItem.setQuantity(cartItem.getQuantity()+1);
+        cartItemRepo.save(cartItem);
+    }
+
+    public void decreaseCartItemQuantity(UserDTO user, UUID cartItemUUID) throws IllegalArgumentException {
+        User userFromDB = userRepo.findById(user.getUserUUID()).orElseThrow(
+                () -> new IllegalArgumentException("There is no user with UUID: " + user.getUserUUID())
+        );
+        Cart userCart = userFromDB.getCart();
+        CartItem cartItem = userCart.getCartItems().stream().filter(item -> item.getCartItemUUID().equals(cartItemUUID)).findFirst().orElseThrow(
+                () -> new IllegalArgumentException("There is no cart item with UUID: " + cartItemUUID)
+        );
+        if (cartItem.getQuantity() == 1) {
+            removeCartItem(user, cartItemUUID);
+        }
+        else {
+            cartItem.setQuantity(cartItem.getQuantity()-1);
+            cartItemRepo.save(cartItem);
+        }
+    }
+
+    public void removeCartItem(UserDTO user, UUID cartItemUUID) throws IllegalArgumentException {
+        User userFromDB = userRepo.findById(user.getUserUUID()).orElseThrow(
+                () -> new IllegalArgumentException("There is no user with UUID: " + user.getUserUUID())
+        );
+        Cart userCart = userFromDB.getCart();
+        CartItem cartItem = userCart.getCartItems().stream().filter(item -> item.getCartItemUUID().equals(cartItemUUID)).findFirst().orElseThrow(
+                () -> new IllegalArgumentException("There is no cart item with UUID: " + cartItemUUID)
+        );
+        cartItemRepo.delete(cartItem);
     }
 }

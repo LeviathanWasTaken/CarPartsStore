@@ -1,31 +1,30 @@
 <div class="user-bar-container">
     <div class="user-bar">
-        {{#isAuthenticated}}
-             <div class="user-info">
-                 {{#user}}
-                     <div class="user-card">
-                         <img class="user-pfp" src="{{avatar}}" alt="">
-                         <div class="user-details">
-                             <div class="username">{{name}}</div>
-                             <div class="user-links">
-                                 <a href="/profile" class="edit-profile-btn">Profile</a>
-                                 <a href="/logout" class="logout-btn">Log out</a>
-                             </div>
-                         </div>
-                     </div>
-                     <a class="cart" href="/cart">
-                         <div class="cart-details">
-                             <div class="amount-of-items-in-cart">{{totalQuantityOfItemsInCart}} items</div>
-                             <div class="total-price-of-items-in-cart">$<span class="price-value">{{totalPriceOfItemsInCartInPennies}}</span>
-                             </div>
-                         </div>
-                         <img src="/static/img/basket.svg" alt="cart">
-                     </a>
-                 {{/user}}
-             </div>
-        {{/isAuthenticated}}
-        {{^isAuthenticated}}
+        {{#userInfo}}
+            <div class="user-info">
+                <div class="user-card">
+                    <img class="user-pfp" src="{{avatar}}" alt="">
+                    <div class="user-details">
+                        <div class="username">{{name}}</div>
+                        <div class="user-links">
+                            <a href="/profile" class="edit-profile-btn">Profile</a>
+                            <a href="/logout" class="logout-btn">Log out</a>
+                        </div>
+                    </div>
+                </div>
+                <a class="cart" href="/cart">
+                    <div class="cart-details">
+                        <div class="amount-of-items-in-cart">{{totalQuantityOfItemsInCart}} items</div>
+                        <div class="total-price-of-items-in-cart">$<span
+                                class="price-value">{{totalPriceOfItemsInCartInPennies}}</span>
+                        </div>
+                    </div>
+                    <img src="/static/img/basket.svg" alt="cart">
+                </a>
+            </div>
+        {{/userInfo}}
+        {{^userInfo}}
             <a class="login-link" href="/login">Login with Github</a>
-        {{/isAuthenticated}}
+        {{/userInfo}}
     </div>
 </div>

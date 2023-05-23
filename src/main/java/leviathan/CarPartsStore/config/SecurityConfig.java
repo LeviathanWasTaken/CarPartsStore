@@ -16,15 +16,14 @@ public class SecurityConfig {
         httpSecurity
               .csrf().disable()
               .authorizeHttpRequests()
-              .requestMatchers("/cart**", "/admin/**").authenticated()
+              .requestMatchers("/cart/**", "/admin/**").authenticated()
               .anyRequest().permitAll()
               .and()
               .logout()
               .logoutSuccessUrl("/")
               .and()
               .oauth2Login()
-              .loginPage("/login")
-              .defaultSuccessUrl("/");
+              .loginPage("/login");
 
         return httpSecurity.build();
     }

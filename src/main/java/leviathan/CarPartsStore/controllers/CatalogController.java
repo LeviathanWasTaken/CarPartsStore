@@ -42,7 +42,7 @@ public class CatalogController {
             mav.setViewName("catalog");
             mav = userService.putMainUserInfo(mav, oAuth2AuthenticationToken, authorizationService);
 
-            //mav.addObject("top5Catalogs", catalogService.getTop5ByPopularity());
+            //mav.addObject("top4Catalogs", catalogService.getTop5ByPopularity());
 
             return mav;
         }
@@ -52,7 +52,7 @@ public class CatalogController {
     public ModelAndView catalog(@PathVariable UUID catalogUUID, @RequestParam(name = "s", required = false, defaultValue = "") String searchRequest, @RequestParam(name = "sort", required = false, defaultValue = "POPULARITY_DESC") SortingType sortingType, OAuth2AuthenticationToken oAuth2AuthenticationToken, HttpServletResponse httpServletResponse) throws IOException {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("catalog");
-        mav.addObject("top5Catalogs", catalogService.getTop5ActiveByPopularity());
+        mav.addObject("top4Catalogs", catalogService.getTop4ActiveByPopularity());
         mav.addObject("searchRequest", searchRequest);
         mav.addObject("rootCatalog", catalogService.getCatalogByUUID(UUID.fromString(rootCatalogUUID)));
         try {
@@ -63,7 +63,7 @@ public class CatalogController {
             UserDTO user = null;
             if (isAuthenticated) {
                 user = authorizationService.authorize(oAuth2AuthenticationToken);
-                mav.addObject("user", user);
+                mav.addObject("userInfo", user);
                 mav.addObject("cart", userService.getUserCartByUserUUID(user.getUserUUID()));
             }
 
@@ -71,9 +71,6 @@ public class CatalogController {
             mav.addObject("childrenCatalogs", catalogs);
             mav.addObject("isChildrenCatalogsEmpty", catalogs.isEmpty());
             List<ProductDTO> products = productsService.getAllActiveProductsByCatalogUUID(catalogUUID, sortingType, user);
-            for (ProductDTO productDTO : products) {
-                productDTO.getProductAttributes().add(new ProductAttribute("Fuel efficiency", "/static/img/favicon.svg", "A"));
-            }
             mav.addObject("products", products);
             mav.addObject("isProductsEmpty", products.isEmpty());
 
@@ -98,7 +95,11 @@ public class CatalogController {
     }
 
     @GetMapping("/catalog")
-    public String redirectToMainPage() {
-        return "redirect:/";
+    public String redirectToMainPage(@RequestParam(required = false, name = "s") String searchQuery) {
+        if (searchQuery != null) {
+            searchQuery = "?s=" + searchQuery;
+        }
+        else searchQuery = "";
+        return "redirect:/catalog/" + rootCatalogUUID + searchQuery;
     }
 }

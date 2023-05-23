@@ -33,7 +33,7 @@ public class ProductsController {
             mav.addObject("totalPriceOfItemsInCart", cartService.calculateTotalPriceOfActiveElementsInCart(cart));
             mav.addObject("totalAmountOfItemsInCart", cartService.calculateTotalAmountOfActiveElementsInCart(cart));
         }
-        mav.addObject("top5Catalogs", catalogService.getTop5ByPopularity());
+        mav.addObject("top4Catalogs", catalogService.getTop5ByPopularity());
 
         Catalog currentCatalog = catalogService.getCatalogByUUID(catalogUUID);
         currentCatalog.setPopularity(currentCatalog.getPopularity()+1);
@@ -69,7 +69,7 @@ public class ProductsController {
         model.put("catalogUUID", catalogUUID);
         model.put("catalogName", product.getCatalog().getName());
         model.put("reviews", reviewService.getAllActiveReviewsByProduct(product));
-        model.put("top5Catalogs", catalogService.getTop5ByPopularity());
+        model.put("top4Catalogs", catalogService.getTop5ByPopularity());
         return "product";
     }
 

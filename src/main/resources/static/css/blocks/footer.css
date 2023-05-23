@@ -15,6 +15,7 @@ footer {
     min-height: 200px;
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .about-us p {
@@ -77,6 +78,46 @@ footer {
     font-size: 15px;
 }
 
+.footer-links {
+    font-family: Arial, Helvetica, sans-serif;
+    color: var(--nav-text-color-onhover);
+    display: flex;
+    justify-content: space-between;
+    line-height: 1.8;
+    border-bottom: 1px solid var(--nav-text-color);
+    padding: 22px 40px;
+
+}
+
+.column {
+    text-align: center;
+}
+
+.footer-links h4 {
+    font-size: 24px;
+    font-weight: bold;
+    border-bottom: 1px solid var(--nav-text-color);
+}
+
+.footer-links a {
+    color: inherit;
+    font-size: 18px;
+}
+
+.footer-links a:hover {
+    color: #ddd;
+    transition-duration: 0.2s;
+}
+
+@media screen and (max-width: 500px){
+    .footer-container {
+        margin-top: 50px;
+    }
+    .footer-links {
+        flex-direction: column;
+    }
+}
+
 @media screen and (max-width: 768px){
     .about-us {
         flex-direction: column;
@@ -86,6 +127,7 @@ footer {
     }
     .about-us p {
         padding-bottom: 20px;
+        padding-top: 20px;
     }
     .about-us h1 {
         padding-top: 20px;

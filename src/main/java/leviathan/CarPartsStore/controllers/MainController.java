@@ -10,8 +10,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.UUID;
-
 @Controller
 public class MainController {
     private final String rootCatalogUUID = "2ba366e2-3f87-4f52-8931-76918748557d";
@@ -32,18 +30,17 @@ public class MainController {
     }
 
     @GetMapping("/")
-    public ModelAndView homePage(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
+    public ModelAndView home(OAuth2AuthenticationToken oAuth2AuthenticationToken) {
         ModelAndView mav = new ModelAndView();
         mav.setViewName("home");
-        mav.addObject("top5Catalogs", catalogService.getTop5ActiveByPopularity());
-        mav.addObject("rootCatalog", catalogService.getCatalogByUUID(UUID.fromString(rootCatalogUUID)));
-        mav.addObject("catalogsList", catalogService.getActiveChildCatalogs(UUID.fromString(rootCatalogUUID)));
-        boolean isAuthenticated = authorizationService.isUserAuthenticated(oAuth2AuthenticationToken);
-        mav.addObject("isAuthenticated", isAuthenticated);
-        if (isAuthenticated) {
+        mav.addObject("top4Catalogs", catalogService.getTop4ActiveByPopularity());
+        if (authorizationService.isUserAuthenticated(oAuth2AuthenticationToken)) {
             UserDTO user = authorizationService.authorize(oAuth2AuthenticationToken);
-            mav.addObject("user", user);
+            mav.addObject("userInfo", user);
         }
         return mav;
     }
 }
+
+
+

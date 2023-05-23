@@ -2,14 +2,8 @@ package leviathan.CarPartsStore.services;
 
 import jakarta.transaction.Transactional;
 import leviathan.CarPartsStore.domain.*;
-import leviathan.CarPartsStore.entity.CartItem;
-import leviathan.CarPartsStore.entity.Discount;
-import leviathan.CarPartsStore.entity.Product;
-import leviathan.CarPartsStore.entity.User;
-import leviathan.CarPartsStore.repos.CartItemRepo;
-import leviathan.CarPartsStore.repos.CatalogRepo;
-import leviathan.CarPartsStore.repos.ProductRepo;
-import leviathan.CarPartsStore.repos.UserRepo;
+import leviathan.CarPartsStore.entity.*;
+import leviathan.CarPartsStore.repos.*;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -22,13 +16,15 @@ public class ProductsService {
     private final CatalogRepo catalogRepo;
     private final UserRepo userRepo;
     private final CartItemRepo cartItemRepo;
+    private final ProductAttributeRepo productAttributeRepo;
 
-    public ProductsService(ProductRepo productRepo, CatalogService catalogService, CatalogRepo catalogRepo, UserRepo userRepo, CartItemRepo cartItemRepo) {
+    public ProductsService(ProductRepo productRepo, CatalogService catalogService, CatalogRepo catalogRepo, UserRepo userRepo, CartItemRepo cartItemRepo, ProductAttributeRepo productAttributeRepo) {
         this.productRepo = productRepo;
         this.catalogService = catalogService;
         this.catalogRepo = catalogRepo;
         this.userRepo = userRepo;
         this.cartItemRepo = cartItemRepo;
+        this.productAttributeRepo = productAttributeRepo;
     }
     /*
     public Product getProduct(String uniqueTag) {
@@ -138,6 +134,16 @@ public class ProductsService {
             productDTO.setProductName(product.getProductName());
             productDTO.setProductPriceInPennies(product.getPriceInPennies());
             productDTO.setProductRating(product.getProductRating());
+            List<ProductAttributeDTO> productAttributes = new ArrayList<>();
+            for (ProductAttribute productAttribute : product.getProductAttributes()) {
+                ProductAttributeDTO productAttributeDTO = new ProductAttributeDTO();
+                productAttributeDTO.setAttributeName(productAttribute.getAttributeName());
+                productAttributeDTO.setAttributeValue(productAttribute.getAttributeValue());
+                productAttributeDTO.setAttributePicture(productAttribute.getAttributePicture());
+                productAttributes.add(productAttributeDTO);
+            }
+            productAttributes.sort(Comparator.comparing(ProductAttributeDTO::getAttributeName));
+            productDTO.setProductAttributes(productAttributes);
             if (user != null) {
                 User userFromBD = userRepo.findById(user.getUserUUID()).orElse(null);
                 if (userFromBD != null) {
@@ -167,5 +173,11 @@ public class ProductsService {
         details.put("test", "test");
         product.setDetails(details);
         productRepo.save(product);
+        ProductAttribute productAttribute = new ProductAttribute();
+        productAttribute.setAttributeName("Fuel efficiency");
+        productAttribute.setAttributeValue("A");
+        productAttribute.setAttributePicture("/static/img/favicon.svg");
+        productAttribute.setProduct(product);
+        productAttributeRepo.save(productAttribute);
     }
 }

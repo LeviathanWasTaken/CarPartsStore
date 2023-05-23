@@ -5,10 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class ProductAttribute {
+@AllArgsConstructor
+public class ProductAttributeDTO {
     private String attributeName;
     private String attributePicture;
-    private Object attributeValue;
+    private String attributeValue;
 }

@@ -1,0 +1,30 @@
+.header-bg {
+    display: none;
+}
+body {
+    background-color: #fff;
+    color: #000;
+}
+footer {
+    display: none;
+}
+.page-break {
+    page-break-before: always;
+}
+.cart-content {
+    flex-direction: column;
+    row-gap: 20px;
+}
+.cart-summary-tile {
+    max-width: inherit;
+    width: auto;
+}
+.cart-summary-order-btn {
+    display: none;
+}
+.cart-item-remove-button {
+    display: none;
+}
+.cart-item-quantity-buttons a {
+    display: none;
+}

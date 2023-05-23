@@ -3,7 +3,6 @@
     font-family: 'Montserrat', sans-serif;
     font-size: 16px;
     font-weight: 600;
-    color: var(--nav-text-color);
     text-decoration: none;
     position: relative;
     transition: all 0.2s ease-in-out;
@@ -69,7 +68,6 @@
 .user-details {
     margin-left: 5px;
     font-family: Arial, Helvetica, sans-serif;
-    color: var(--nav-text-color);
 }
 
 .user-links {
@@ -84,7 +82,6 @@
 
 .edit-profile-btn {
     font-size: 15px;
-    color: var(--nav-text-color);
     text-decoration: none;
 }
 
@@ -95,7 +92,6 @@
 
 .logout-btn {
     font-size: 15px;
-    color: var(--nav-text-color);
     text-decoration: none;
 }
 
@@ -122,7 +118,6 @@
     margin-right: 5px;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 18px;
-    color: var(--nav-text-color);
     text-align: right;
     text-decoration: none;
 }

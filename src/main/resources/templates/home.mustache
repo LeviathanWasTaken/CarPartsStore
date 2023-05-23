@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/static/css/main.css">
-    <link rel="stylesheet" href="/static/css/blocks/catalog.css">
+    <link rel="stylesheet" href="/static/css/main.css" media="all">
+    <link rel="stylesheet" href="/static/css/blocks/catalog.css" media="all">
+    <link rel="stylesheet" href="/static/css/blocks/home.css" media="all">
+    <link rel="stylesheet" href="/static/css/print.css" media="print">
     <link rel="shortcut icon" href="/static/img/favicon.svg" type="image/x-icon">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Car Parts Store</title>
@@ -12,12 +14,30 @@
 {{>partials/user-bar}}
 <div class="catalog">
     <div class="catalog-title">
-        <p>Catalog</p>
+        <p>Popular categories - <a href="/catalog">browse all</a> </p>
     </div>
     <div class="catalog-list">
-        {{#catalogsList}}
+        {{#top4Catalogs}}
             {{>partials/catalog-tile}}
-        {{/catalogsList}}
+        {{/top4Catalogs}}
+    </div>
+</div>
+<div class="reviews page-break">
+    <div class="review">
+        <h2 class="review-title">"Fantastic Selection and Quality"</h2>
+        <p class="review-body">"I have been a customer of this car parts store for years, and I am always impressed with
+            their vast selection of high-quality parts. Whether I need a simple replacement or a specialized component,
+            they have it all. The ordering process is seamless, and their customer service is top-notch. Highly
+            recommended!"</p>
+        <p class="review-author">John Doe, our customer</p>
+    </div>
+    <div class="review">
+        <h2 class="review-title">"Reliable and Trustworthy"</h2>
+        <p class="review-body">"Finding a reliable car parts store can be challenging, but I am glad I stumbled upon
+            this one. They have consistently delivered genuine parts for my vehicle, and their attention to detail is
+            commendable. I have complete trust in their products and wouldn't hesitate to recommend them to fellow car
+            enthusiasts."</p>
+        <p class="review-author">Jane Doe, our customer</p>
     </div>
 </div>
 {{>partials/footer}}
@@ -25,7 +45,7 @@
     var priceElements = document.querySelectorAll('[class*="price-value"]');
     priceElements.forEach(function (priceElement) {
         var value = parseInt(priceElement.innerHTML);
-        priceElement.innerHTML = (value/100).toFixed(2);
+        priceElement.innerHTML = (value / 100).toFixed(2);
     });
 </script>
 </body>
