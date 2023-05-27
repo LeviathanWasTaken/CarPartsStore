@@ -151,7 +151,7 @@ public class CartService {
             CartItemDTO cartItem = new CartItemDTO();
             cartItem.setCartItemUUID(cartItemFromDB.getCartItemUUID());
             cartItem.setCartItemQuantity(cartItemFromDB.getQuantity());
-            cartItem.setCartItemTotalPriceInPennies(cartItemFromDB.getQuantity()*cartItemFromDB.getProduct().getPriceInPennies());
+            cartItem.setCartItemTotalPriceInPennies(cartItemFromDB.getQuantity() * cartItemFromDB.getProduct().getPriceInPennies());
             cartItem.setCartItemProductName(cartItemFromDB.getProduct().getProductName());
             cartItem.setCartItemProductUUID(cartItemFromDB.getProduct().getProductUUID());
             cartItem.setCartItemProductPreviewPicture(cartItemFromDB.getProduct().getProductPictures().get(0));
@@ -166,7 +166,7 @@ public class CartService {
         Cart cart = getCartFromDBByUUID(cartUUID);
         int totalPrice = 0;
         for (CartItem cartItem : cart.getCartItems().stream().filter(
-              cartItem -> cartItem.getProduct().getRemovalStatus().equals(RemovalStatus.ACTIVE)).toList()) {
+                cartItem -> cartItem.getProduct().getRemovalStatus().equals(RemovalStatus.ACTIVE)).toList()) {
             totalPrice += cartItem.getProduct().getPriceInPennies() * cartItem.getQuantity();
         }
         return totalPrice;
@@ -176,7 +176,7 @@ public class CartService {
         Cart cart = getCartFromDBByUUID(cartUUID);
         int totalAmount = 0;
         for (CartItem cartItem : cart.getCartItems().stream().filter(
-              cartItem -> cartItem.getProduct().getRemovalStatus().equals(RemovalStatus.ACTIVE)).toList()) {
+                cartItem -> cartItem.getProduct().getRemovalStatus().equals(RemovalStatus.ACTIVE)).toList()) {
             totalAmount += cartItem.getQuantity();
         }
         return totalAmount;
@@ -218,7 +218,7 @@ public class CartService {
         CartItem cartItem = userCart.getCartItems().stream().filter(item -> item.getCartItemUUID().equals(cartItemUUID)).findFirst().orElseThrow(
                 () -> new IllegalArgumentException("There is no cart item with UUID: " + cartItemUUID)
         );
-        cartItem.setQuantity(cartItem.getQuantity()+1);
+        cartItem.setQuantity(cartItem.getQuantity() + 1);
         cartItemRepo.save(cartItem);
     }
 
@@ -230,13 +230,9 @@ public class CartService {
         CartItem cartItem = userCart.getCartItems().stream().filter(item -> item.getCartItemUUID().equals(cartItemUUID)).findFirst().orElseThrow(
                 () -> new IllegalArgumentException("There is no cart item with UUID: " + cartItemUUID)
         );
-        if (cartItem.getQuantity() == 1) {
-            removeCartItem(user, cartItemUUID);
-        }
-        else {
-            cartItem.setQuantity(cartItem.getQuantity()-1);
-            cartItemRepo.save(cartItem);
-        }
+        cartItem.setQuantity(cartItem.getQuantity() - 1);
+        cartItemRepo.save(cartItem);
+
     }
 
     public void removeCartItem(UserDTO user, UUID cartItemUUID) throws IllegalArgumentException {
@@ -248,5 +244,19 @@ public class CartService {
                 () -> new IllegalArgumentException("There is no cart item with UUID: " + cartItemUUID)
         );
         cartItemRepo.delete(cartItem);
+    }
+
+    public CartItemDTO getCartItemByUUID(UUID cartItemUUID) throws IllegalArgumentException {
+        CartItem itemFromDB = cartItemRepo.findById(cartItemUUID).orElseThrow(
+                () -> new IllegalArgumentException("There is no cart item with UUID: " + cartItemUUID)
+        );
+        CartItemDTO cartItem = new CartItemDTO();
+        cartItem.setCartItemProductUUID(itemFromDB.getProduct().getProductUUID());
+        cartItem.setCartItemProductName(itemFromDB.getProduct().getProductName());
+        cartItem.setCartItemQuantity(itemFromDB.getQuantity());
+        cartItem.setCartItemUUID(itemFromDB.getCartItemUUID());
+        cartItem.setCartItemProductPreviewPicture(itemFromDB.getProduct().getProductPictures().get(0));
+        cartItem.setCartItemProductPriceInPennies(itemFromDB.getProduct().getPriceInPennies());
+        return cartItem;
     }
 }

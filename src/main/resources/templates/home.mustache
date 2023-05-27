@@ -11,14 +11,21 @@
 </head>
 <body>
 {{>partials/header}}
-{{>partials/user-bar}}
+<div class="user-bar-container">
+    <div class="user-bar" id="user-bar"></div>
+</div>
 <div class="catalog">
     <div class="catalog-title">
         <p>Popular categories - <a href="/catalog">browse all</a> </p>
     </div>
-    <div class="catalog-list">
+    <div class="catalog-list" id="home-catalog-list">
         {{#top4Catalogs}}
-            {{>partials/catalog-tile}}
+            <div class="catalog-tile">
+                <a class="catalog-name" href="/catalog/{{catalogUUID}}">
+                    <img class="catalog-tile-img" src="{{catalogPicture}}">
+                    <p class="catalog-name-p">{{catalogName}}</p>
+                </a>
+            </div>
         {{/top4Catalogs}}
     </div>
 </div>
@@ -41,12 +48,7 @@
     </div>
 </div>
 {{>partials/footer}}
-<script>
-    var priceElements = document.querySelectorAll('[class*="price-value"]');
-    priceElements.forEach(function (priceElement) {
-        var value = parseInt(priceElement.innerHTML);
-        priceElement.innerHTML = (value / 100).toFixed(2);
-    });
-</script>
+<script src="/static/js/elements.js"></script>
+<script src="/static/js/user-bar-loader.js"></script>
 </body>
 </html>

@@ -1,4 +1,4 @@
-<div class="product-tile">
+<div class="product-tile" id="{{productUUID}}">
     <div class="product-img-section">
         <img src="{{previewPicture}}" class="product-img" alt="">
     </div>
@@ -20,7 +20,7 @@
             {{/isProductOnSale}}
         </div>
     </div>
-    <div class="add-to-cart-section">
+    <div class="product-buttons-section">
         <div class="product-price-section">
             {{#isProductOnSale}}
                 <div class="product-sale-old-price"><s>$<span class="product-price-value">{{productPriceInPennies}}</span></s></div>
@@ -32,10 +32,10 @@
         </div>
         {{#isAuthenticated}}
             {{#isProductInCart}}
-                <a class="go-to-cart-button" href="/cart">In cart</a>
+                <button class="go-to-cart-button" onclick="goToCart()">In cart</button>
             {{/isProductInCart}}
             {{^isProductInCart}}
-                <a class="add-to-cart-button" href="/cart/add/{{productUUID}}">Add to cart</a>
+                <button class="add-to-cart-button">Add to cart</button>
             {{/isProductInCart}}
         {{/isAuthenticated}}
         {{^isAuthenticated}}

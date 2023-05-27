@@ -132,7 +132,7 @@ input::-webkit-search-cancel-button {
     display: none;
 }
 
-.catalogs-top5 {
+.header-catalogs-top4 {
     display: flex;
     padding-top: 20px;
     width: 100%;
@@ -140,7 +140,7 @@ input::-webkit-search-cancel-button {
     justify-content: space-between;
 }
 
-.catalogs-top5-tile {
+.header-catalogs-top4-tile {
     font-size: 16px;
     margin-right: 20px;
     margin-left: 20px;
@@ -149,7 +149,7 @@ input::-webkit-search-cancel-button {
     align-items: center;
 }
 
-.catalogs-top5-icon {
+.header-catalogs-top4-icon {
     width: 30px;
     height: 30px;
 }
@@ -164,10 +164,10 @@ nav a:hover {
     transition-duration: 500ms;
 }
 @media screen and (max-width: 700px) {
-    .catalogs-top5 {
+    .header-catalogs-top4 {
         flex-direction: column;
     }
-    .catalogs-top5-tile {
+    .header-catalogs-top4-tile {
         margin-top: 5px;
         margin-bottom: 5px;
         margin-left: 10px;

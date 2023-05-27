@@ -12,7 +12,9 @@
 </head>
 <body>
 {{>partials/header}}
-{{>partials/user-bar}}
+<div class="user-bar-container">
+    <div class="user-bar" id="user-bar"></div>
+</div>
 <div class="catalog" id="catalog">
     {{^isCatalogPathEmpty}}
         <div class="catalog-path">
@@ -37,7 +39,7 @@
 {{^isProductsEmpty}}
     <div class="products">
         <div class="products-header">
-            <h1 class="products-title">Products list ({{amountOfProducts}} items found)</h1>
+            <h1 class="products-title" id="products-title"></h1>
             <div class="sorting-bar">
                 <button class="sorting-type-btn" type="button" id="sort-by-price-asc-btn">cheap first</button>
                 <button class="sorting-type-btn" type="button" id="sort-by-price-desc-btn">expensive first</button>
@@ -46,29 +48,75 @@
             </div>
         </div>
         <div class="products-main">
-            <div class="filters-section">
-                <div class="filters-title">Filters</div>
-                <div class="filters-content">
-                    <div class="filters-placeholder"><p>Coming soon...</p></div>
-                </div>
-            </div>
-            <div class="products-list">
-                {{#products}}
-                    {{>partials/product-tile}}
-                {{/products}}
-            </div>
+            <div class="products-list" id="products-list-container"></div>
         </div>
     </div>
 {{/isProductsEmpty}}
 {{>partials/footer}}
 <script>
-    var priceElements = document.querySelectorAll('[class*="price-value"]');
-    priceElements.forEach(function (priceElement) {
-        var value = parseInt(priceElement.innerHTML);
-        priceElement.innerHTML = (value/100).toFixed(2);
+    var url = window.location.href;
+    var catalogUUID = url.split('/');
+    catalogUUID = catalogUUID[catalogUUID.length - 1];
+</script>
+<!-- Template for Product Tile -->
+<script type="text/html" id="product-template">
+    <div class="product-tile">
+        <div class="product-img-section">
+            <img src="" class="product-img" alt="">
+        </div>
+        <div class="product-data-section">
+            <div class="product-info-section">
+                <a class="product-name" href=""></a>
+                <div class="product-price">
+                    $<span class="product-price-value"></span>
+                </div>
+            </div>
+            <div class="product-buttons-section">
+                <div class="product-buttons">
+                    <div class="product-attributes"></div>
+                    <div class="product-info-footer">
+                        <a class="product-rating" href=""></a>
+                    </div>
+                </div>
+                <div class="cart-button-section"></div>
+            </div>
+        </div>
+
+    </div>
+</script>
+<script src="/static/js/elements.js"></script>
+<script src="/static/js/user-bar-loader.js"></script>
+<script>
+    var sortingButtons = document.querySelectorAll('[class*="sorting-type-btn"]');
+    var sortingType = 'POPULARITY_ASC';
+
+
+    var sortByPriceAscButton = document.getElementById("sort-by-price-asc-btn");
+    sortByPriceAscButton.addEventListener("click", function () {
+        sortingType = 'PRICE_ASC';
+        loadProductsList();
+        disableSortingButton(sortByPriceAscButton);
+    });
+    var sortByPriceDescButton = document.getElementById("sort-by-price-desc-btn");
+    sortByPriceDescButton.addEventListener("click", function () {
+        sortingType = 'PRICE_DESC';
+        loadProductsList();
+        disableSortingButton(sortByPriceDescButton);
+    });
+    var sortByPopularityAscButton = document.getElementById("sort-by-popularity-asc-btn");
+    sortByPopularityAscButton.addEventListener("click", function () {
+        sortingType = 'POPULARITY_ASC';
+        loadProductsList();
+        disableSortingButton(sortByPopularityAscButton);
+    });
+    var sortByPopularityDescButton = document.getElementById("sort-by-popularity-desc-btn");
+    sortByPopularityDescButton.addEventListener("click", function () {
+        sortingType = 'POPULARITY_DESC';
+        loadProductsList();
+        disableSortingButton(sortByPopularityDescButton);
     });
 
-    var url = window.location.href;
+    disableSortingButton(sortByPopularityDescButton);
 
     var params = url.substring(url.indexOf("?") + 1).split("&");
     params.forEach(function (param) {
@@ -78,49 +126,46 @@
         }
     });
 
-    var sortByPriceAscButton = document.getElementById("sort-by-price-asc-btn");
-    sortByPriceAscButton.addEventListener("click", function () {
-        applySorting("PRICE_ASC")
-    });
-    var sortByPriceDescButton = document.getElementById("sort-by-price-desc-btn");
-    sortByPriceDescButton.addEventListener("click", function () {
-        applySorting("PRICE_DESC")
-    });
-    var sortByPopularityAscButton = document.getElementById("sort-by-popularity-asc-btn");
-    sortByPopularityAscButton.addEventListener("click", function () {
-        applySorting("POPULARITY_ASC")
-    });
-    var sortByPopularityDescButton = document.getElementById("sort-by-popularity-desc-btn");
-    sortByPopularityDescButton.addEventListener("click", function () {
-        applySorting("POPULARITY_DESC")
-    });
-
-    if (url.includes("sort=PRICE_ASC")) {
-        disableSortingButton(sortByPriceAscButton);
-    } else if (url.includes("sort=PRICE_DESC")) {
-        disableSortingButton(sortByPriceDescButton);
-    } else if (url.includes("sort=POPULARITY_ASC")) {
-        disableSortingButton(sortByPopularityAscButton);
-    } else if (url.includes("sort=POPULARITY_DESC")) {
-        disableSortingButton(sortByPopularityDescButton);
-    } else {
-        disableSortingButton(sortByPopularityDescButton);
+    function disableSortingButton(selectedButton) {
+        sortingButtons.forEach(button => enableSortingButton(button));
+        selectedButton.className = "sorting-type-btn-selected";
+        selectedButton.disabled = true;
     }
 
-    function disableSortingButton(button) {
-        button.className = "sorting-type-btn-selected";
-        button.disabled = true;
+    function enableSortingButton(button) {
+        button.className = "sorting-type-btn";
+        button.disabled = false;
     }
 
-    function applySorting(sortingType) {
-        var parameterName = "sort";
-        var currentUrl = window.location.href;
-        if (currentUrl.includes("sort=")) {
-            window.location.href = currentUrl.replace(new RegExp(`${parameterName}=[^&]*`), `${parameterName}=${sortingType}`);
-        } else {
-            window.location.href = currentUrl + (currentUrl.includes("?") ? "&" : "?") + `${parameterName}=${sortingType}`;
-        }
+    function addToCart(productUUID, cartButtonContainer) {
+        fetch('/api/cart/add-product', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ productUUID : productUUID }) // Replace with the data you want to send
+
+            })
+                .then(response => {
+                    if (response.ok) {
+                        cartButtonContainer.innerHTML = '';
+                        loadCartButton("go", cartButtonContainer, goToCart);
+                        loadUserBar();
+                    }
+                    else {
+                        console.log(response.status, JSON.stringify(response.body));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error: ', error);
+                });
+
+    }
+
+    function goToCart() {
+        window.location.href = "/cart";
     }
 </script>
+<script src="/static/js/products-list-loader.js"></script>
 </body>
 </html>

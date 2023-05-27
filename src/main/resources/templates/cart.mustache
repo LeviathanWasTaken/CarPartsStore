@@ -19,7 +19,7 @@
         <div class="cart-content">
             <div class="cart-items-list">
                 {{#cartItems}}
-                    <div class="cart-item">
+                    <div class="cart-item" id="{{cartItemUUID}}">
                         <img class="cart-item-picture" src="{{cartItemProductPreviewPicture}}" alt="">
                         <div class="cart-item-content">
                             <div class="cart-item-info">
@@ -29,11 +29,11 @@
                             </div>
                             <div class="cart-item-buttons">
                                 <div class="cart-item-quantity-buttons">
-                                    <a href="/cart/decrease-quantity/{{cartItemUUID}}">&#8211;</a>
+                                    <button onclick="decreaseQuantity('{{cartItemUUID}}')">&#8211;</button>
                                     <span class="cart-item-quantity-value">{{cartItemQuantity}}</span>
-                                    <a href="/cart/increase-quantity/{{cartItemUUID}}">+</a>
+                                    <button onclick="increaseQuantity('{{cartItemUUID}}')">+</button>
                                 </div>
-                                <a class="cart-item-remove-button" href="/cart/remove-item/{{cartItemUUID}}">Remove</a>
+                                <button class="cart-item-remove-button" onclick="removeItem('{{cartItemUUID}}')">Remove</button>
                             </div>
                         </div>
                     </div>
@@ -62,23 +62,92 @@
     {{/isCartEmpty}}
 </div>
 {{>partials/footer}}
+<script src="/static/js/elements.js"></script>
 <script>
-    var totalPrice = 0;
-    var totalQuantity = 0;
-    var cartItems = document.querySelectorAll('.cart-item');
-    cartItems.forEach(function (cartItem) {
-        var cartItemQuantity = parseInt(cartItem.querySelector('.cart-item-quantity-value').innerHTML);
-        totalQuantity += cartItemQuantity;
-        totalPrice += parseInt(cartItem.querySelector('.cart-item-price-value').innerHTML)*cartItemQuantity;
-    });
-    document.querySelector('[class*="cart-summary-total-price-value"]').innerHTML = totalPrice;
-    document.querySelector('[class*="total-quantity-value"]').innerHTML = totalQuantity;
+    calculateValues();
 
     var priceElements = document.querySelectorAll('[class*="price-value"]');
     priceElements.forEach(function (priceElement) {
         var value = parseInt(priceElement.innerHTML);
         priceElement.innerHTML = (value/100).toFixed(2);
     });
+
+    function decreaseQuantity(itemUUID) {
+        fetch(`/api/cart/decrease`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ cartItemUUID : itemUUID })
+        }).then(response => {
+            if (response.ok) {
+                response.json().then(cartItem => {
+                    if (cartItem.cartItemQuantity < 1) {
+                        removeItem(cartItem.cartItemUUID);
+                    } else {
+                        var cartItemElement = document.getElementById(`${cartItem.cartItemUUID}`);
+                        cartItemElement.querySelector('.cart-item-quantity-value').innerHTML = cartItem.cartItemQuantity;
+                        calculateValues();
+                    }
+                })
+            }
+            else console.log(response.status);
+        });
+    }
+
+    function increaseQuantity(itemUUID) {
+        fetch(`/api/cart/increase`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ cartItemUUID : itemUUID })
+        }).then(response => {
+            if (response.ok) {
+                response.json().then(cartItem => {
+                    var cartItemElement = document.getElementById(`${cartItem.cartItemUUID}`);
+                    cartItemElement.querySelector('.cart-item-quantity-value').innerHTML = cartItem.cartItemQuantity;
+                    calculateValues();
+                })
+            }
+            else console.log(response.status);
+        });
+    }
+
+    function removeItem(itemUUID) {
+        fetch(`/api/cart`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ cartItemUUID : itemUUID })
+        }).then(response => {
+            if (response.ok) {
+                var cartItemElement = document.getElementById(`${itemUUID}`);
+                cartItemElement.remove();
+                if (document.querySelectorAll('.cart-item').length > 0) {
+                    calculateValues();
+                }
+                else {
+                    window.location.href = "/cart";
+                }
+            }
+            else console.log(response.status);
+        });
+    }
+
+    function calculateValues() {
+        var totalPrice = 0;
+        var totalQuantity = 0;
+        var cartItems = document.querySelectorAll('.cart-item');
+        cartItems.forEach(function (cartItem) {
+            var cartItemQuantity = parseInt(cartItem.querySelector('.cart-item-quantity-value').innerHTML);
+            totalQuantity += cartItemQuantity;
+            totalPrice += parseFloat(cartItem.querySelector('.cart-item-price-value').innerHTML)*cartItemQuantity;
+        });
+        document.querySelector('[class*="cart-summary-total-price-value"]').innerHTML = totalPrice;
+        document.querySelector('[class*="total-quantity-value"]').innerHTML = totalQuantity;
+    }
 </script>
 </body>
 </html>

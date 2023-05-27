@@ -7,7 +7,7 @@
 
 .cart-empty-tile {
     max-width: inherit;
-    min-height: 400px;
+    min-height: 500px;
     background-color: rgb(255, 255, 255);
     box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 2px 0px;
     border: 1px solid;
@@ -51,7 +51,7 @@
 }
 
 .footer-container {
-    margin-top: 200px;
+    margin-top: 100px;
 }
 
 .cart-empty-tile-buttons a:hover {
@@ -170,23 +170,30 @@
     column-gap: 10px;
 }
 
-.cart-item-quantity-buttons a {
-    font-size: 25px;
+.cart-item-quantity-buttons button {
+    font-size: 20px;
     color: inherit;
     padding: 0 6px;
+    border: none;
+    background-color: inherit;
 }
 
-.cart-item-quantity-buttons a:hover {
+.cart-item-quantity-buttons button:hover {
     background-color: #eee;
     border-radius: 4px;
+    cursor: pointer;
 }
 
 .cart-item-remove-button {
     font-size: 15px;
+    background-color: inherit;
+    border: none;
+    color: inherit;
 }
 
 .cart-item-remove-button:hover {
     color: #FC7507;
+    cursor: pointer;
 }
 
 @media screen and (max-width: 900px){
